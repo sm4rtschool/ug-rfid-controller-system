@@ -1,0 +1,2 @@
+1. when data masuk, bandingin, if tidak ada perubahan data, abaikan, if ada insert
+2. filter data by day

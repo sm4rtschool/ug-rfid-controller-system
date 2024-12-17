@@ -6,20 +6,20 @@
 
         <div class="chart-hd">
           
-          <strong>Pilih Kategori : </strong>
+          <strong>&nbsp;&nbsp;Filter Data&nbsp;&nbsp;</strong>
 
           <select name="filter_id_parameter" id="filter_id_parameter" class="selectpicker" data-live-search="true">
 
             <option value="0">- Pilih Kategori -</option>
-            <?php foreach ($area as $k => $v) { ?>
+            <?php foreach ($kategori as $k => $v) { ?>
               <option value="<?php echo $k; ?>"><?php echo $v; ?></option>
             <?php } ?>
 
           </select>
      
-          <button type="button" class="btn btn-success" onclick="get_datatables_checked()">Set State</button>
+          <!-- <button type="button" class="btn btn-success" onclick="get_datatables_checked()">Set State</button> -->
 
-          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#databaseModal">Add</button>
+          <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#databaseModal">Add</button> -->
           <!--<button type="button" class="btn btn-primary" onclick="window.location.reload()">Refresh</button>-->
           <button type="button" class="btn btn-primary" onclick="reload_datatables()">Refresh</button>
 
@@ -35,6 +35,88 @@
 </div>
 <!-- <div class="container-fluid"> -->
 
+<style>
+/* Styling dasar untuk tabel */
+table.dataTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+}
+
+/* Header table styling */
+table.dataTable thead th {
+    background-color: #343a40;
+    color: #ffffff;
+    font-weight: bold;
+    text-align: center;
+    padding: 12px;
+}
+
+/* Row styling */
+table.dataTable tbody tr {
+    transition: background-color 0.3s ease;
+}
+
+table.dataTable tbody tr:hover {
+    background-color: #e9ecef;
+}
+
+/* Cell styling */
+table.dataTable tbody td {
+    padding: 10px;
+    text-align: center;
+    color: #495057;
+}
+
+/* Pagination styling */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    color: #343a40 !important;
+    border: 1px solid #ddd;
+    background: #ffffff;
+    padding: 5px 10px;
+    margin: 2px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background-color: #6c757d;
+    color: #ffffff !important;
+}
+
+/* Active page styling */
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background-color: #343a40 !important;
+    color: #ffffff !important;
+}
+
+/* Search box and entries dropdown */
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+    border: 1px solid #ddd;
+    padding: 5px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    color: #495057;
+}
+
+/* Information text styling */
+.dataTables_wrapper .dataTables_info {
+    font-size: 14px;
+    color: #343a40;
+    margin-top: 10px;
+}
+
+/* Table border radius */
+table.dataTable {
+    border-radius: 8px;
+    overflow: hidden;
+}
+</style>
+
 <!-- Assuming you want to display the content table data in a datatable on the same page -->
 <!-- Add the following code snippet after the <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script> line in your HTML file-->
 
@@ -44,6 +126,10 @@
 <script src="<?php echo base_url(); ?>assets/js/functions.js" type="text/javascript"></script>
 
 <script type="text/javascript">
+
+  function update_status(id, value) {
+    window.location.href = "<?php echo base_url(); ?>content/change/" + id + "/" + value;
+  }
 
   function clickColorAdd() {
       var color = $('#html5colorpickeradd').val();
@@ -805,21 +891,24 @@ $(document).ready(function() {
                 d.filter_id_parameter = $('#filter_id_parameter').val();
             }
         },
+        "order": [[1, 'desc']],
         columns: [
+            { data: "No", className: "dt-center" },
             { data: "ID Content", className: "dt-center" },
-            {
-                "data": "checkbox_id_content",
-                "className": "dt-center",
-                "orderable": false,
-                "searchable": false
-            },
-            { data: "nama_variable", className: "dt-left" },
-            { data: "is_parameter_active", className: "dt-center" },
-            { data: "threshold_state_qty_active", className: "dt-center" },
-            { data: "threshold_state_persentase_active", className: "dt-center" },
-            { data: "light_active", className: "dt-center" },
-            { data: "sound_active", className: "dt-center" },
-            { data: "Action", className: "dt-center" },
+            { data: "lokasi_sebelumnya", className: "dt-center" },
+            { data: "Ruangan", className: "dt-center" },
+            { data: "reader_gate", className: "dt-center" },
+            { data: "reader_angle", className: "dt-center" },
+            { data: "waktu", className: "dt-center" },
+            { data: "Kode Brg", className: "dt-center" },
+            { data: "NUP", className: "dt-center" },
+            { data: "Nama Brg", className: "dt-left" },
+            { data: "kategori_pergerakan", className: "dt-center" },
+            { data: "is_legal_moving", className: "dt-center" },
+            { data: "keterangan_pergerakan", className: "dt-center" },
+            // { data: "Action", className: "dt-center", orderable: false, searchable: false, render: function (data, type, row) {
+            //     return '<i class="ui-tooltip fa fa-pencil-square-o" title="Edit" style="font-size: 22px;color:#2222aa; cursor:pointer;" data-original-title="Edit" onclick="editData(' + row.id_temp_table + ')"></i>&nbsp;<i class="ui-tooltip fa fa-trash-o" title="Hapus" style="font-size: 22px;color:#aa2222; cursor:pointer;" data-original-title="Hapus" onclick="deleteContent(' + row.id_temp_table + ')"></i>';
+            // } },
         ]
     });
 
@@ -867,23 +956,28 @@ function editData(id) {
                 $('#label_edit_is_parameter_active').html('Active');
             }
 
+            $('#edit_is_reverse_threshold').val(responseData.data.is_reverse_threshold);
+            $('#edit_is_data_passive').val(responseData.data.is_data_passive);
+
             //$('#edit_state').val(responseData.data.state);
 
             // Alert Proactive
 
-            $('#edit_threshold_state_qty_proactive').val(responseData.data.threshold_state_qty_proactive);
-            $('#edit_threshold_state_persentase_proactive').val(responseData.data.threshold_state_persentase_proactive);
-            $('#edit_light_proactive').prop('checked', responseData.data.light_proactive == 1);
-            $('#edit_sound_proactive').prop('checked', responseData.data.sound_proactive == 1);
-            $('#edit_text_to_speech_proactive').val(responseData.data.text_to_speech_proactive == '' ? 'Isi Text To Speech Proactive' : responseData.data.text_to_speech_proactive);
+            // $('#edit_threshold_state_qty_proactive').val(responseData.data.threshold_state_qty_proactive);
+            // $('#edit_threshold_state_persentase_proactive').val(responseData.data.threshold_state_persentase_proactive);
+
+            // $('#edit_light_proactive').prop('checked', responseData.data.light_proactive == 1);
+            // $('#edit_sound_proactive').prop('checked', responseData.data.sound_proactive == 1);
+            // $('#edit_text_to_speech_proactive').val(responseData.data.text_to_speech_proactive == '' ? 'Isi Text To Speech Proactive' : responseData.data.text_to_speech_proactive);
 
             // Alert Active
 
-            $('#edit_threshold_state_qty_active').val(responseData.data.threshold_state_qty_active);
-            $('#edit_threshold_state_persentase_active').val(responseData.data.threshold_state_persentase_active);
-            $('#edit_light_active').prop('checked', responseData.data.light_active == 1);
-            $('#edit_sound_active').prop('checked', responseData.data.sound_active == 1);
-            $('#edit_text_to_speech_active').val(responseData.data.text_to_speech_active == 1 ? 'Isi Text To Speech Active' : responseData.data.text_to_speech_active);
+            // $('#edit_threshold_state_qty_active').val(parseFloat(responseData.data.threshold_state_qty_active));
+            // $('#edit_threshold_state_persentase_active').val(parseFloat(responseData.data.threshold_state_persentase_active));
+
+            // $('#edit_light_active').prop('checked', responseData.data.light_active == 1);
+            // $('#edit_sound_active').prop('checked', responseData.data.sound_active == 1);
+            // $('#edit_text_to_speech_active').val(responseData.data.text_to_speech_active == 1 ? 'Isi Text To Speech Active' : responseData.data.text_to_speech_active);
 
             // Refactor the code to uncheck or check based on the value
             /*
@@ -894,16 +988,22 @@ function editData(id) {
             }
             */
 
-            $('#edit_is_light_strobe_active').prop('checked', responseData.data.is_light_strobe_active == 1);
-            $('#edit_interval').val(responseData.data.interval);
+            // $('#edit_is_light_strobe_active').prop('checked', responseData.data.is_light_strobe_active == 1);
+            // $('#edit_interval').val(responseData.data.interval);
 
-            $('#edit_is_threshold_confirm').prop('checked', responseData.data.is_threshold_confirm == 1);
+            // $('#edit_is_threshold_confirm').prop('checked', responseData.data.is_threshold_confirm == 1);
 
             load_dropdown_parameter_edit(responseData.data.parameter_id);
             load_dropdown_variable_edit(responseData.data.parameter_id, responseData.data.variable_id);
 
-            load_dropdown_sound(responseData.data.id_sound);
-            $('edit_light_color_code').val(responseData.data.light_color_code);
+            // load_dropdown_sound(responseData.data.id_sound);
+            // $('edit_light_color_code').val(responseData.data.light_color_code);
+
+            // $('#edit_relation_key').val(responseData.data.relation_key);
+            // $('#edit_left_string_tts').val(responseData.data.left_string_tts);
+            // $('#edit_right_string_tts').val(responseData.data.right_string_tts);
+
+            $('#edit_free_text_tts').val(responseData.data.free_text_tts);
 
         },
         error: function(xhr, status, error){
@@ -939,7 +1039,7 @@ function hitApi(id) {
           load_dropdown_parameter_hitapi(responseData.data.parameter_id);
           load_dropdown_variable_hitapi(responseData.data.parameter_id, responseData.data.variable_id);
 
-          $('#hitapi_state').val(responseData.data.state);
+          $('#hitapi_state').val(parseFloat(responseData.data.state));
 
       },
       error: function(xhr, status, error) {
@@ -977,6 +1077,32 @@ function deleteContent(id){
 }
 
 function store() {
+
+  /*
+  let relation_key = $('#relation_key').val();
+
+  if (relation_key == '') {
+    alert('Relation Key harus diisi');
+    relation_key.focus();
+    return false;
+  }
+  */
+
+  let parameter_id = $('#parameter_id').val();
+
+  if (parameter_id == '0') {
+    alert('Kategori harus diisi');
+    parameter_id.focus();
+    return false;
+  }
+
+  let variable_id = $('#variable_id').val();
+
+  if (variable_id == '0') {
+    alert('Variabel harus diisi');
+    variable_id.focus();
+    return false;
+  }
 
   // Add your button click logic here
 
@@ -1019,6 +1145,24 @@ function update() {
 
   if ($('#edit_variable_id').val() == '0'){
     alert('Variable harus dipilih');
+    return false;
+  }
+
+  /*
+  let relation_key = $('#edit_relation_key').val();
+
+  if (relation_key == '') {
+    alert('Relation Key harus diisi');
+    relation_key.focus();
+    return false;
+  }
+    */
+
+  let edit_is_reverse_threshold = $('#edit_is_reverse_threshold').val();
+
+  if (edit_is_reverse_threshold == 'x') {
+    alert('Mode Threshold harus diisi');
+    edit_is_reverse_threshold.focus();
     return false;
   }
 
@@ -1134,14 +1278,19 @@ function playSoundAdd() {
 
             <tr>
               <th>No.</th>
-              <th style="text-align: center;" class="check"><input type="checkbox" id="checkall" value=""/></th>
-              <th>Nama Variable</th>
-              <th>Active</th>
-              <th>Qty (Count)</th>
-              <th>Qty (%)</th>
-              <th>Light</th>
-              <th>Sound</th>
-              <th>Status</th>
+              <th style="text-align: center;">ID</th>
+              <th style="text-align: center;">Lokasi Terakhir</th>
+              <th style="text-align: center;">Ruangan</th>
+              <th style="text-align: center;">Gate</th>
+              <th style="text-align: center;">Angle</th>
+              <th style="text-align: center;">Waktu</th>
+              <th style="text-align: center;">Kode Barang</th>
+              <th style="text-align: center;">NUP</th>
+              <th style="text-align: center;">Nama Barang</th>
+              <th style="text-align: center;">Kategori Moving</th>
+              <th style="text-align: center;">Tipe Moving</th>
+              <th style="text-align: center;">Keterangan Moving</th>
+              <!-- <th>Action</th> -->
             </tr>
 
         </thead>
@@ -1181,12 +1330,38 @@ function playSoundAdd() {
                             </select>
                         </div>
 
+                        <!--<div class="form-group">
+                            <label for="left_string_tts">Left String Text To Speech</label>
+                              <input type="text" class="form-control" id="left_string_tts" name="left_string_tts">
+                        </div>-->
+
+                        <input type="hidden" class="form-control" id="left_string_tts" name="left_string_tts" value="">
+
                         <div class="form-group">
                             <label for="variable_id">Variable</label>
                             <select class="form-control" id="variable_id" name="variable_id">
                                 <!-- Add your select options here -->
                             </select>
                         </div>
+
+                        <!--<div class="form-group">
+                            <label for="right_string_tts">Right String Text To Speech</label>
+                              <input type="text" class="form-control" id="right_string_tts" name="right_string_tts">
+                        </div>-->
+
+                        <input type="hidden" class="form-control" id="right_string_tts" name="right_string_tts" value="">
+
+                        <!--<div class="form-group">
+                            <label for="relation_key">Relation Key</label>
+                              <input type="text" class="form-control" id="relation_key" name="relation_key">
+                        </div>-->
+
+                        <div class="form-group">
+                            <label for="free_text_tts">Free Text, Text To Speech</label>
+                              <input type="text" class="form-control" id="free_text_tts" name="free_text_tts" value="">
+                        </div>
+                        
+                        <input type="hidden" class="form-control" id="relation_key" name="relation_key" value="">
 
                         <input type="hidden" class="form-control" id="total_qty_parameter" name="total_qty_parameter">
 
@@ -1198,9 +1373,31 @@ function playSoundAdd() {
                             </div>
                         </div>
 
+                        <!-- <div class="form-group">
+                            <label for="is_reverse_threshold">Mode Threshold</label>
+
+                              <select class="form-control" id="is_reverse_threshold" name="is_reverse_threshold">
+                                <option value="x" selected>- Mode Threshold -</option>
+                                <option value="0">Normal</option>
+                                <option value="1">Reverse</option>
+                              </select>
+                              
+                        </div>
+
+                        <div class="form-group">
+                            <label for="is_data_passive">Integrasi Data</label>
+
+                              <select class="form-control" id="is_data_passive" name="is_data_passive">
+                                <option value="x" selected>- Integrasi Data -</option>
+                                <option value="0">Aktif</option>
+                                <option value="1">Pasif</option>
+                              </select>
+                              
+                        </div> -->
+
                         <input type="hidden" class="form-control" id="state" name="state" value="0">
 
-                        <h2>Parameter Set</h2>
+                        <!-- <h2>Parameter Set</h2>
                         <hr>
 
                           <div class="form-group">
@@ -1229,7 +1426,6 @@ function playSoundAdd() {
                           <div class="form-group">
                               <label for="sound_active">Sound</label>
                               <select class="form-control" id="sound_id" name="sound_id">
-                                  <!-- Add your select options here -->
                               </select>
                               <input type="hidden" name="is_tts" id="is_tts" value="0">
                               <input type="hidden" name="html_id" id="html_id" value="">
@@ -1239,7 +1435,7 @@ function playSoundAdd() {
                               <div style="text-align: right;">
                               <button type="button" class="btn btn-primary" onclick="playSoundAdd()">Play</button>
                               </div>
-                          </div>
+                          </div> -->
 
                           <input type="hidden" class="form-control" id="threshold_state_qty_proactive" name="threshold_state_qty_proactive">
                           <input type="hidden" class="form-control" id="threshold_state_persentase_proactive" name="threshold_state_persentase_proactive">
@@ -1280,12 +1476,38 @@ function playSoundAdd() {
                             <input type="hidden" name="hidden_edit_parameter_id" id="hidden_edit_parameter_id" value="">
                         </div>
 
+                        <!--<div class="form-group">
+                            <label for="edit_left_string_tts">Left String Text To Speech</label>
+                              <input type="hidden" class="form-control" id="edit_left_string_tts" name="edit_left_string_tts">
+                        </div>-->
+
+                        <input type="hidden" class="form-control" id="edit_left_string_tts" name="edit_left_string_tts" value="">
+
                         <div class="form-group">
                             <label for="edit_variable_id">Variable</label>
                             <select class="form-control" id="edit_variable_id" name="edit_variable_id">
                                 <!-- Add your select options here -->
                             </select>
                         </div>
+
+                        <!--<div class="form-group">
+                            <label for="edit_right_string_tts">Right String Text To Speech</label>
+                              <input type="hidden" class="form-control" id="edit_right_string_tts" name="edit_right_string_tts">
+                        </div>-->
+
+                        <input type="hidden" class="form-control" id="edit_right_string_tts" name="edit_right_string_tts" value="">
+
+                        <div class="form-group">
+                            <label for="edit_free_text_tts">Free Text, Text To Speech</label>
+                              <input type="text" class="form-control" id="edit_free_text_tts" name="edit_free_text_tts" value="">
+                        </div>
+
+                        <!--<div class="form-group">
+                            <label for="edit_relation_key">Relation Key</label>
+                              <input type="text" class="form-control" id="edit_relation_key" name="edit_relation_key">
+                        </div>-->
+
+                        <input type="hidden" class="form-control" id="edit_relation_key" name="edit_relation_key" value="">
 
                         <input type="hidden" class="form-control" id="old_variable_id" name="old_variable_id" value="">
                         <input type="hidden" class="form-control" id="edit_total_qty_parameter" name="edit_total_qty_parameter">
@@ -1298,9 +1520,11 @@ function playSoundAdd() {
                             </div>
                         </div>
 
+                        <input type="hidden" class="form-control" id="edit_is_reverse_threshold" name="edit_is_reverse_threshold" value="0">
+                        <input type="hidden" class="form-control" id="edit_is_data_passive" name="edit_is_data_passive" value="1">
                         <input type="hidden" class="form-control" id="edit_state" name="edit_state" value="0">
 
-                        <h2>Parameter Set</h2>
+                        <!-- <h2>Parameter Set</h2>
                         <hr>
 
                           <div class="form-group">
@@ -1312,9 +1536,9 @@ function playSoundAdd() {
                                 <input type="text" class="form-control" id="edit_threshold_state_persentase_active" name="edit_threshold_state_persentase_active">
                                 <span class="input-group-addon">%</span>
                               </div>
-                          </div>
+                          </div> -->
 
-                        <h2>Alert Action</h2>
+                        <!-- <h2>Alert Action</h2>
                         <hr>
                           
                           <div class="form-group">
@@ -1329,7 +1553,6 @@ function playSoundAdd() {
                           <div class="form-group">
                               <label for="edit_sound_active">Sound</label>
                               <select class="form-control" id="edit_sound_id" name="edit_sound_id">
-                                  <!-- Add your select options here -->
                               </select>
                               <input type="hidden" name="edit_is_tts" id="edit_is_tts" value="0">
                               <input type="hidden" name="edit_html_id" id="edit_html_id" value="">
@@ -1339,70 +1562,7 @@ function playSoundAdd() {
                               <div style="text-align: right;">
                               <button type="button" class="btn btn-primary" onclick="playSound()">Play</button>
                               </div>
-                          </div>
-
-                          <?php 
-                          /**
-                           * 
-                           * 
-                        <h2>Alert Proactive</h2>
-                        <hr>
-
-                          <div class="form-group">
-                              <label for="edit_threshold_state_qty_proactive">Alert Proactive Trigger by Count</label>
-                              <div class="input-group">
-                                <input type="text" class="form-control" id="edit_threshold_state_qty_proactive" name="edit_threshold_state_qty_proactive">
-                                <span class="input-group-addon">Unit</span>
-                              </div>
-                          </div>
-                          
-                          <div class="form-group">
-                              <label for="edit_threshold_state_persentase_proactive">Alert Proactive Trigger by Persentase</label>
-                              <div class="input-group">
-                                <input type="text" class="form-control" id="edit_threshold_state_persentase_proactive" name="edit_threshold_state_persentase_proactive">
-                                <span class="input-group-addon">%</span>
-                              </div>
-                          </div>
-                          
-                          <div class="form-group">
-                              <label for="edit_light_proactive">Alert Light Proactive Action (Blink Kuning)</label>
-                              <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="edit_light_proactive" name="edit_light_proactive" value="1" onchange="this.value = this.checked ? 1 : 0">
-                                <label class="custom-control-label" for="edit_light_proactive"></label>
-                              </div>
-                          </div>
-
-                          <div class="form-group">
-                              <label for="edit_sound_proactive">Alert Sound Proactive Action (Text To Speech)</label>
-                              <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="edit_sound_proactive" name="edit_sound_proactive" value="1" onchange="this.value = this.checked ? 1 : 0">
-                                <label class="custom-control-label" for="edit_sound_proactive"></label>
-                                <input type="text" class="form-control" id="edit_text_to_speech_proactive" name="edit_text_to_speech_proactive">
-                              </div>
-                          </div>
-
-                        <hr>
-                          
-                          <div class="form-group">
-                              <label for="edit_is_light_strobe_active">Light Strobe</label>
-                              <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="edit_is_light_strobe_active" name="edit_is_light_strobe_active" value="1" onchange="this.value = this.checked ? 1 : 0">
-                                <label class="custom-control-label" for="edit_is_light_strobe_active"></label>
-                              </div>
-                          </div>
-
-                        <hr>
-
-                        <div class="form-group">
-                            <label for="edit_interval">Interval (Every ? menit until normal)</label>
-                            <div class="input-group">
-                              <input type="text" class="form-control" id="edit_interval" name="edit_interval">
-                              <span class="input-group-addon">Menit</span>
-                            </div>
-                        </div>
-                           * 
-                           */
-                          ?>
+                          </div> -->
 
                           <input type="hidden" class="form-control" id="edit_threshold_state_qty_proactive" name="edit_threshold_state_qty_proactive">
                           <input type="hidden" class="form-control" id="edit_threshold_state_persentase_proactive" name="edit_threshold_state_persentase_proactive">

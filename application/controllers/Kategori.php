@@ -50,7 +50,7 @@ class Kategori extends CI_Controller {
                 $nestedData['no_urut'] = $i;
                 $i++;
                 $nestedData['nama_parameter'] = $row->nama_parameter;
-                $nestedData['total_data'] = $this->fungsi->pecah($row->total_data);
+                // $nestedData['total_data'] = $this->fungsi->pecah($row->total_data);
                 //<button class="btn btn-warning btn-sm editBtn" data-id="'.$row->id_content.'" onClick="hitApi('.$row->id_content.')">Hit API</button>';
                 $nestedData['action'] = '<button class="btn btn-sm btn-info" type="button" title="Edit" onclick="editData(' . "'" . $row->id_parameter . "'" . ')">Edit</i></button>
                 <button class="btn btn-sm btn-danger" onclick="deleteKategori(' . "'" . $row->id_parameter . "'" . ')">Hapus</button>';
@@ -74,9 +74,9 @@ class Kategori extends CI_Controller {
     {
 
         $nama_parameter = $this->input->post('nama_parameter');
-        $total_data = $this->input->post('total_data');
-        $total_data = str_replace(',', '', $total_data);
-        $total_data = str_replace('.', '', $total_data);
+        // $total_data = $this->input->post('total_data');
+        // $total_data = str_replace(',', '', $total_data);
+        // $total_data = str_replace('.', '', $total_data);
 
         $is_exist = $this->Categoriesmodel->check_nama_parameter($nama_parameter);
 
@@ -88,8 +88,8 @@ class Kategori extends CI_Controller {
             //$message = "Nama parameter bisa digunakan";
 
             $data = [
-                'nama_parameter' => $nama_parameter,
-                'total_data' => $total_data
+                'nama_parameter' => $nama_parameter
+                // 'total_data' => $total_data
             ];
 
             $is_success = $this->Categoriesmodel->insert_categories($data);
@@ -142,8 +142,8 @@ class Kategori extends CI_Controller {
         if ($edit_data) {
             $data = [
                 'id_parameter' => $edit_data->id_parameter,
-                'nama_parameter' => $edit_data->nama_parameter,
-                'total_data' => $edit_data->total_data
+                'nama_parameter' => $edit_data->nama_parameter
+                // 'total_data' => $edit_data->total_data
             ];
             $output = array(
                 "is_success" => true,
@@ -165,27 +165,18 @@ class Kategori extends CI_Controller {
 
         $id_parameter = $this->input->post('hidden_edit_id_parameter');
         $edit_nama_parameter = $this->input->post('edit_nama_parameter');
-        $total_data = $this->input->post('edit_total_data');
-        $total_data = str_replace(',', '', $total_data);
-        $total_data = str_replace('.', '', $total_data);
+
+        // $total_data = $this->input->post('edit_total_data');
+        // $total_data = str_replace(',', '', $total_data);
+        // $total_data = str_replace('.', '', $total_data);
 
         $hidden_edit_old_nama_parameter = $this->input->post('hidden_edit_old_nama_parameter');
         
 
         if ($edit_nama_parameter == $hidden_edit_old_nama_parameter) {
 
-            $data = array(
-                'total_data' => $total_data
-            );
-
-            $this->Categoriesmodel->update_categories($id_parameter, $data);
-            $is_success = $this->db->affected_rows() > 0;
-
-            if ($is_success) {
-                $message = "Data updated successfully";
-            } else {
-                $message = "Failed to update data";
-            }
+            $is_success = true;
+            $message = "Data updated successfully";
 
         } else {
 
@@ -197,8 +188,7 @@ class Kategori extends CI_Controller {
             } else {
 
                 $data = array(
-                    'nama_parameter' => $edit_nama_parameter,
-                    'total_data' => $total_data
+                    'nama_parameter' => $edit_nama_parameter
                 );
 
                 $this->Categoriesmodel->update_categories($id_parameter, $data);

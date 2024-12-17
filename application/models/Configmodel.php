@@ -73,4 +73,14 @@ class Configmodel extends CI_Model {
         return $this->db->get('config')->num_rows() > 0;
     }
 
+    public function isSystemOn() {
+        $query = $this->db->get('pengaturan_sistem');
+        return $query;
+    }
+
+    public function updateToggleSwitch($value){
+        $qryExec = $this->db->update('pengaturan_sistem', array('is_system_on' => $value));
+        return $qryExec;
+    }
+
 }

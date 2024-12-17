@@ -15,9 +15,9 @@ class Contentmodel extends CI_Model {
 
     public function update_content($id, $data){
         $this->db->where('id_content', $id);
-        $this->db->update('content', $data);
+        $success = $this->db->update('content', $data);
         //echo $this->db->last_query();
-        return $this->db->affected_rows();
+        return $success;
     }
 
     public function update_hitapi($id, $data){
@@ -35,69 +35,46 @@ class Contentmodel extends CI_Model {
 
     public function count_all_content($filter_id_parameter){
 
-        if ($filter_id_parameter != '0') {
-            $this->db->where('parameter_id', $filter_id_parameter);
-        }
+        // if ($filter_id_parameter != '0') {
+        //     $this->db->where('parameter_id', $filter_id_parameter);
+        // }
 
-        $this->db->from('content');
+        $this->db->select('a.*, b.kode_aset, b.nup, b.nama_aset');
+        $this->db->from('tag_temp_table a');
+        $this->db->join('tb_master_aset b', 'a.rfid_tag_number = b.kode_tid');
         return $this->db->count_all_results();
         
     }
 
     public function get_content($limit, $start, $order, $dir, $filter_id_parameter){
 
-        /**
-        * $this->db->limit($limit, $start);
+        $this->db->select('a.*, b.kode_aset, b.nup, b.nama_aset');
+        $this->db->from('tag_temp_table a');
+        $this->db->join('tb_master_aset b', 'a.rfid_tag_number = b.kode_tid');
         $this->db->order_by($order, $dir);
-        $this->db->select('b.nama_parameter, c.nama_variable, a.*');
-        $this->db->from('content a');
-        $this->db->join('parameter b', 'b.id_parameter = a.parameter_id');
-        $this->db->join('variable c', 'c.id_variable = a.variable_id');
-        $query = $this->db->get();
-        return $query->result();
-        */
-
-        $ssql = "SELECT b.nama_parameter, c.nama_variable, a.*, d.*
-                FROM content a
-                JOIN parameter b ON b.id_parameter = a.parameter_id
-                JOIN variable c ON c.id_variable = a.variable_id
-                LEFT JOIN sound d ON d.id_sound = a.sound_id ";
-
-        if ($filter_id_parameter != '0') {
-
-            $ssql = "SELECT b.nama_parameter, c.nama_variable, a.*, d.*
-                    FROM content a
-                    JOIN parameter b ON b.id_parameter = a.parameter_id
-                    JOIN variable c ON c.id_variable = a.variable_id
-                    LEFT JOIN sound d ON d.id_sound = a.sound_id
-                    WHERE a.parameter_id = $filter_id_parameter ";
-                
-        }
-
-        $ssql .= "ORDER BY $order $dir LIMIT $start, $limit";
-
-        $query = $this->db->query($ssql);
-        return $query->result();
+        $this->db->limit($limit, $start);
+        return $this->db->get()->result();
 
     }
 
     public function content_search($limit, $start, $search, $order, $dir){
         $this->db->limit($limit, $start);
-        $this->db->like('c.nama_variable', $search);
+        $this->db->like('b.nama_aset', $search);
+        $this->db->or_like('b.kode_aset', $search);
         $this->db->order_by($order, $dir);
-        $this->db->select('b.nama_parameter, c.nama_variable, a.*');
-        $this->db->from('content a');
-        $this->db->join('parameter b', 'b.id_parameter = a.parameter_id');
-        $this->db->join('variable c', 'c.id_variable = a.variable_id');
+        $this->db->select('a.*, b.kode_aset, b.nup, b.nama_aset');
+        $this->db->from('tag_temp_table a');
+        $this->db->join('tb_master_aset b', 'a.rfid_tag_number = b.kode_tid');
         $query = $this->db->get();
         return $query->result();
     }
 
     public function content_search_count($search){
-        $this->db->like('c.nama_variable', $search);
-        $this->db->from('content a');
-        $this->db->join('parameter b', 'b.id_parameter = a.parameter_id');
-        $this->db->join('variable c', 'c.id_variable = a.variable_id');
+        $this->db->select('a.*, b.kode_aset, b.nup, b.nama_aset');
+        $this->db->from('tag_temp_table a');
+        $this->db->join('tb_master_aset b', 'a.rfid_tag_number = b.kode_tid');
+        $this->db->like('b.nama_aset', $search);
+        $this->db->or_like('b.kode_aset', $search);
         return $this->db->count_all_results();
     }
     
@@ -131,12 +108,11 @@ class Contentmodel extends CI_Model {
     }
 
     public function getContentById($id){
-        $this->db->where('id_content', $id);
-        $this->db->select('b.nama_parameter, b.total_data, c.nama_variable, a.*, d.*');
+        $this->db->select('b.nama_parameter, c.nama_variable, a.*');
         $this->db->from('content a');
         $this->db->join('parameter b', 'b.id_parameter = a.parameter_id');
         $this->db->join('variable c', 'c.id_variable = a.variable_id');
-        $this->db->join('sound d', 'd.id_sound = a.sound_id', 'left');
+        $this->db->where('id_content', $id);
         $query = $this->db->get();
         return $query->row();
     }
@@ -148,8 +124,6 @@ class Contentmodel extends CI_Model {
                 join parameter b on b.id_parameter = a.parameter_id
                 join variable c on c.id_variable = a.variable_id
                 order by a.state >= a.threshold_state_qty_active desc";
-
-        // where date(waktu)=CURDATE() and is_threshold_confirm = 0 and state >= threshold_state_qty";
 
         $query = $this->db->query($ssql);
 		//echo $this->db->last_query();
@@ -179,32 +153,6 @@ class Contentmodel extends CI_Model {
 
     public function addFormTest($parameter_id, $variable_id, $state){
 
-        /**
-         * `id_content` int(11) NOT NULL AUTO_INCREMENT,
-        `waktu` timestamp NOT NULL DEFAULT current_timestamp(),
-        `parameter_id` int(11) NOT NULL DEFAULT 0,
-        `variable_id` int(11) NOT NULL DEFAULT 0,
-        `total_qty_parameter` int(11) NOT NULL DEFAULT 0,
-        `is_parameter_active` tinyint(1) NOT NULL DEFAULT 0,
-        `state` int(11) NOT NULL DEFAULT 0,
-        `threshold_state_qty_proactive` int(11) NOT NULL DEFAULT 0,
-        `threshold_state_persentase_proactive` double NOT NULL DEFAULT 0 COMMENT 'state_off/total_qty_variable*100',
-        `light_proactive` tinyint(1) NOT NULL DEFAULT 0,
-        `sound_proactive` tinyint(1) NOT NULL DEFAULT 0,
-        `text_to_speech_proactive` text DEFAULT NULL,
-        `threshold_state_qty_active` int(11) DEFAULT 0,
-        `threshold_state_persentase_active` double DEFAULT 0,
-        `light_active` tinyint(1) DEFAULT 0,
-        `sound_active` tinyint(1) DEFAULT 0,
-        `text_to_speech_active` text DEFAULT NULL,
-         */
-
-         /*
-        $sqlInsert = "INSERT INTO content_demo (parameter_id, variable_id, total_qty_parameter, is_parameter_active, state, threshold_state_qty_active, threshold_state_persentase_active, light_active, sound_active, text_to_speech_active, light_color_code, sound_id)
-                    SELECT parameter_id, variable_id, total_qty_parameter, is_parameter_active, '$state', threshold_state_qty_active, threshold_state_persentase_active, light_active, sound_active, text_to_speech_active, light_color_code, sound_id
-                    FROM content WHERE parameter_id = $parameter_id AND variable_id = $variable_id";
-        */
-
         $ssql = "update content set state = '$state' 
                 where parameter_id = $parameter_id AND variable_id = $variable_id";
 
@@ -233,6 +181,7 @@ class Contentmodel extends CI_Model {
     public function getParameterVariable($parameter_id, $variable_id){
         $this->db->where('parameter_id', $parameter_id);
         $this->db->where('variable_id', $variable_id);
+        // $this->db->where('relation_key', $relation_key);
         return $this->db->get('content');
     }
 
@@ -271,5 +220,12 @@ class Contentmodel extends CI_Model {
 		}
 
 	}
+
+    public function change_status_content($id, $value)
+    {
+        $this->db->where('id_content', $id);
+        $success = $this->db->update('content', array('is_parameter_active' => $value));
+        return $success;
+    }
 
 }

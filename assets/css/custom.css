@@ -102,8 +102,8 @@ table a:link {
 /*custom navbar begin here**/
 
 .navbar-default {
-  /*background-color: #004689;*/
-  background-color: #C9344E;
+  background-color: #004689;
+  /* background-color: #C9344E; */
   border-color: #8e44ad;
 }
 .navbar-default .navbar-brand {
@@ -172,10 +172,8 @@ table a:link {
   }
 }
 
-
-
 .chart-hd{
-  background-color: #C9344E;
+  background-color: #004689;
   color:#f4d942 !important;
   border-bottom-right-radius: 1em;
   border-top-left-radius: 1em;

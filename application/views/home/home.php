@@ -1,3 +1,50 @@
+<style>
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+</style>
+
   <div class="container-fluid">
 
     <div class="row">
@@ -6,25 +53,41 @@
 
         <div class="chart-hd">
           
-          <strong>Pilih Kategori : </strong>
+          <strong>&nbsp;&nbsp;Filter Data&nbsp;&nbsp;</strong>
 
           <select name="filter_id_parameter" id="filter_id_parameter" class="selectpicker" data-live-search="true">
             <option value="0">- All -</option>  
-            <?php foreach ($area as $k => $v) { ?>
+            <?php foreach ($kategori as $k => $v) { ?>
               <option value="<?php echo $k; ?>"><?php echo $v; ?></option>
             <?php } ?>
           </select>
 
           <!--<button type="button" class="btn btn-success" onClick="sendMessage()">Connect</button>-->
-          <button type="button" class="btn btn-primary" onClick="addTest()">Add</button>
+          <!--<button type="button" class="btn btn-primary" onClick="addTest()">Hit API</button>-->
           <button type="button" class="btn btn-primary" onclick="window.location.reload()">Refresh</button>
 
+          <!-- <strong id="lastSynchronized" class="pull-center">&nbsp;Last Synchronize : <?php //echo $this->fungsi->indonesian_date(date('Y-m-d H:i:s'), 'l, j F Y - H:i'); ?></strong>
+          <strong style="font-size: 13px;" id="lastSynchronized" class="pull-center"></strong> -->
+          <strong style="font-size: 13px;" id="info_interval_request" class="pull-center"></strong>
+
+          <label class="switch" style="float: left;">
+            <input type="checkbox" id="toggleSwitch">
+            <span class="slider round"></span>
+          </label>
+
+          <strong id="toggleText" style="float: left; margin-left: 10px; margin-right: 5px; text-align: center; font-weight: small; font-size: 21px; font-style: italic;">Off</strong>
+
           <input type="text" id="messageInput" placeholder="Type a message">
+
+          <input type="hidden" id="flag_moving_in" name="flag_moving_in" value="<?php echo $qrypengaturan_sistem->flag_moving_in; ?>">
+          <input type="hidden" id="flag_moving_out" name="flag_moving_out" value="<?php echo $qrypengaturan_sistem->flag_moving_out; ?>">
+
+          <input type="hidden" name="is_system_on" id="is_system_on" value="<?php echo $qrypengaturan_sistem->is_system_on; ?>">
 
           <input type="hidden" name="interval_get_data" id="interval_get_data" value="<?php echo $config_list_data->value; ?>">
           <input type="hidden" name="interval_trigger_alert" id="interval_trigger_alert" value="<?php echo $config_trigger->value; ?>">
 
-          <input type="hidden" name="interval_global_sound" id="interval_global_sound" value="<?php echo $config_global_sound->value; ?>">
+          <!-- <input type="hidden" name="interval_global_sound" id="interval_global_sound" value="<?php echo $config_global_sound->value; ?>">
           <input type="hidden" name="variable_global_sound" id="variable_global_sound" value="<?php echo $config_global_sound->variable; ?>">
 
           <input type="hidden" name="interval_apis_url_play_sound" id="interval_apis_url_play_sound" value="<?php echo $config_apis_url_play_sound->value; ?>">
@@ -36,7 +99,10 @@
           <input type="hidden" name="interval_global_light_color" id="interval_global_light_color" value="<?php echo $config_global_light_color->value; ?>">
           <input type="hidden" name="variable_global_light_color" id="variable_global_light_color" value="<?php echo $config_global_light_color->variable; ?>">
 
-          <div id="is_data_ada" class="blinking-circle" style="width: 30px; height: 30px; border-radius: 50%; margin: 0 auto; animation: blinker 1s linear infinite; float: right; background-color: #e74c3c;"></div>
+          <input type="hidden" name="is_controller_on" id="is_controller_on" value="<?php echo $config_ip_address_controller->value; ?>">
+          <input type="hidden" name="variable_ip_address_controller" id="variable_ip_address_controller" value="<?php echo $config_ip_address_controller->variable; ?>"> -->
+
+          <strong class="pull-right"><div id="is_data_ada" class="blinking-circle" style="width: 30px; height: 30px; border-radius: 50%; margin: 0 auto; animation: blinker 1s linear infinite; float: right; background-color: #e74c3c;"></div></strong>
 
         </div>
         <!-- <div class="chart-hd"> -->
@@ -78,18 +144,15 @@
         <thead>
 
             <tr>
-              
-              <th style="width: 3%; text-align: center;">No.</th>
-              <th style="width: 14%; text-align: center;">Nama Variable</th>
-              <th style="width: 5%; text-align: center;">Total</th>
-              <th style="width: 5%; text-align: center;">Active</th>
-              <th style="width: 5%; text-align: center;">State</th>
-              <th style="width: 10%; text-align: center;">Qty (Count)</th>
-              <th style="width: 10%; text-align: center;">Qty (%)</th>
-              <th style="width: 8%; text-align: center;">Light</th>
-              <th style="width: 8%; text-align: center;">Sound</th>
-              <th style="width: 7%; text-align: center;">Status</th>
-
+              <th style="text-align: center;">No.</th>
+              <th style="text-align: center;">Room Name</th>
+              <th style="text-align: center;">Reader Angle</th>
+              <th style="text-align: center;">Reader Gate</th>
+              <th style="text-align: center;">RFID Tag Number</th>
+              <th style="text-align: center;">Waktu</th>
+              <th style="text-align: center;">Kode Barang</th>
+              <th style="text-align: center;">NUP</th>
+              <th style="text-align: center;">Nama Barang</th>
             </tr>
 
         </thead>
@@ -311,15 +374,79 @@
 
   <script type="text/javascript">
 
-    const messageArea = document.getElementById('messageArea');
-    messageArea.innerHTML = '';
-    messageArea.innerHTML += 'Status : Trying to Connect to Server...';
+  var interval = parseInt($('#interval_trigger_alert').val());
+  var initialSecond = Math.floor(interval / 1000);
+  var second = initialSecond;
+
+  const messageArea = document.getElementById('messageArea');
+  messageArea.innerHTML = '';
+
+  $('#info_interval_request').html('');
+
+  let isSystemOn = $('#is_system_on').val();
+
+  function countDownRequest() {
+
+        second = second - 1;
+
+        if (isSystemOn == 1) {
+          
+          $('#info_interval_request').html('Interval Request Data : ' + second + ' seconds');        
+
+        } else {
+          $('#info_interval_request').html('System Off');
+        }
+
+        if (second == 0) {
+            
+          second = initialSecond; // Reset ke nilai awal
+          getLastData();
+
+        }
+
+  }
+
+    if(isSystemOn == 1){
+
+      messageArea.innerHTML += 'Status : System On';
+      console.log('System On');
+
+      //socket.send('refresh');
+      //console.log('web socket send refresh');
+
+    } else {
+
+      messageArea.innerHTML += 'Status : System Off';
+      console.log('System Off');
+      
+    }
+
+    $('#is_data_ada').hide();
 
     let variable_apis_url_web_socket = $('#variable_apis_url_web_socket').val();
 
-    // socket io
-    const socket = new WebSocket('ws://' + variable_apis_url_web_socket);
+    if (isSystemOn == 1){
+        //$('#info_system_on').html('System On');
+        $('#info_interval_request').html('Interval Request Data : ' + second + ' seconds');
+        let interval_count_down_request = 1000;
+        var count_down_request = setInterval(countDownRequest, interval_count_down_request);
+    } else {
+        //$('#info_system_on').html('System Off');
+        let interval_count_down_request = 0;
+        $('#info_interval_request').html('');
+    }
 
+    // socket io
+
+    // Buat koneksi socket dengan konfigurasi yang telah ditentukan
+    //var socket = io('https://your_socket_io_server_address', socketConfig);
+
+    //const socket = new WebSocket('ws://' + variable_apis_url_web_socket);
+    // wss://itbs.slmugmandiri.co.id:3000
+    //const socket = new WebSocket('wss://' + '38.47.76.231:3000');
+    //const socket = new WebSocket('wss://192.168.201.129:3000');
+
+    /*
     socket.onopen = function(event) {
       console.log('Your Proactive Alert System Connected to WebSocket server');
       const messageArea = document.getElementById('messageArea');
@@ -327,6 +454,7 @@
       messageArea.innerHTML += 'Status : Connected to Server';
       //socket.send('refresh');
     };
+    */
 
     $('.selectpicker').selectpicker({
       style: 'btn-info',
@@ -354,256 +482,286 @@
 
     }
 
-    function getRunningText(){
-
-      // textToSpeech(html_id, 'perhatian, ' + nama_variable + ', ' + 'saat ini mencapai ' + state + 'unit ATM');
-
-      $.getJSON("<?php echo site_url(); ?>home/getRunningText", function(data){
-
-        $rowCount = Object.keys(data).length;
-
-        if ($rowCount > 0) {
-
-          var items = '';
-          var prefix = '';
-
-          $.each(data, function( key, val ) {
-            items += val.nama_variable + ' = ' + val.state + ' ~ ';
-          });
-
-          $('.header-text').text("Perhatian !! " + items);
-          console.log("Perhatian !! " + items);
-
-        } else {
-          console.log('Saat ini kondisi terpantau aman !!');
-          $('.header-text').text("Saat ini kondisi terpantau aman !!");
-        }
-
-      });
-
-    }
-
     function separatorAngka(number) {
       return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
-    function getStateAlert(){
-
-      // config for sound and lamp
-
-      $.getJSON('<?php echo site_url(); ?>home/get_state_alert', function(data) {
-
-        var iCounter = 1;
-        var iCounterNext = 1;
-        var html_sound_prefix = 'sound';
-
-        let interval_global_sound = $('#interval_global_sound').val();
-        let variable_global_sound = $('#variable_global_sound').val();
-
-        let interval_global_light_color = $('#interval_global_light_color').val();
-        let variable_global_light_color = $('#variable_global_light_color').val();
-
-        $rowCount = Object.keys(data).length;
-
-        if ($rowCount > 0) {
-
-          $('#is_data_ada').show();
-          //console.log('alert light = on');
-
-          for (var i in data){
-
-            var nama_parameter = data[i].nama_parameter;
-            var nama_variable = data[i].nama_variable;
-
-            var is_tts = data[i].is_tts;
-            var html_id = data[i].html_id;
-
-            var state = data[i].state;
-            var light_color_code = data[i].light_color_code;
-
-            // config light color code
-
-            // Add this jQuery code to change the CSS value of the div with class "blinking-circle red" background-color
-            // <div id="is_data_ada" class="blinking-circle red" style="float: right; display: block;"></div>
-
-            if (is_tts == 1) {
-              // jalanin voice disini
-              console.log('play text to speech');
-              textToSpeech('buzzer', 'perhatian, ' + nama_variable + ', ' + 'saat ini mencapai ' + state + 'unit ATM');
-            } else {
-
-              if (interval_global_sound == '0') {
-              
-                var bell = document.getElementById(html_id);
-                console.log('play sound = ' + html_id);
-
-                // Ensure user interaction before playing the bell sound
-                document.addEventListener('click', function() {
-                    bell.play().catch(function(error) {
-                        console.error('Audio playback was prevented:', error);
-                    });
-                });
-                
-              }
-
-            }
-
-            if (interval_global_light_color == '0') {
-              $('.blinking-circle').css('background-color', light_color_code);
-            }
-
-          }
-          // for (var i in data) {
-
-          // cek apakah global sound aktif
-
-          if (interval_global_sound == '1') {
-
-            let variable_apis_url_play_sound = $('#variable_apis_url_play_sound').val();
-            let interval_apis_url_play_sound = $('#interval_apis_url_play_sound').val();
-
-            if (interval_apis_url_play_sound == '1') {
-              
-              $.get(variable_apis_url_play_sound, function(data){
-                console.log('play sound global, hit apis');
-              });
-
-            }
-
-            /*
-            var bell_global_sound = document.getElementById(variable_global_sound);
-            console.log('play sound = ' + variable_global_sound);
-
-            // Ensure user interaction before playing the bell sound
-            document.addEventListener('click', function() {
-              
-              bell_global_sound.play().catch(function(error) {
-                console.error('Audio playback was prevented:', error);
-              });
-                  
+    function getLastLocation(rfid_tag_number) {
+        return new Promise(function(resolve, reject) {
+            $.ajax({
+                type: 'GET',
+                url: '<?php echo site_url(); ?>home/get_last_location/',
+                data: { rfid_tag_number: rfid_tag_number },
+                success: function(response) {
+                    var responseData = JSON.parse(response);
+                    if (responseData.is_data_ada == true) {
+                        resolve(responseData.data[0]);
+                    } else {
+                        resolve(null); // atau bisa menggunakan reject untuk handle data kosong
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(error);
+                    reject(error);
+                }
             });
-            */
+        });
+    }
 
-          }
+    function getLastDetection(rfid_tag_number, room_id, reader_angle) {
 
-          // cek apakah global light color aktif
+      //alert('getLastDetection: rfid_tag_number: ' + rfid_tag_number + ', room_id: ' + room_id + ', reader_angle: ' + reader_angle);
 
-          if (interval_global_light_color == '1') {
-            $('.blinking-circle').css('background-color', variable_global_light_color);
-          }
+        return new Promise(function(resolve, reject) {
+            $.ajax({
+                type: 'GET',
+                url: '<?php echo site_url(); ?>home/get_last_detection/',
+                data: { 
+                  rfid_tag_number: rfid_tag_number,
+                  room_id: room_id,
+                  reader_angle: reader_angle
+                },
+                success: function(response) {
 
-        } else {
-          
-          $('#is_data_ada').hide();
-          console.log('alert light = off');
-          console.log('alert sound = off');
+                    var responseData = JSON.parse(response);
 
-          // Ensure user interaction before playing the bell sound
-          var audios = document.getElementsByTagName('audio');
-          Array.prototype.forEach.call(audios, function(audio) {
-              audio.pause();
-          });
+                    // alert('getLastDetection: responseData.is_data_ada: ' + responseData.is_data_ada);
+                    
+                    if (responseData.is_data_ada == true) {
+                        resolve(responseData.data[0]);
+                    } else {
+                        resolve(null); // atau bisa menggunakan reject untuk handle data kosong
+                    }
 
-        }
-
-      });
+                },
+                error: function(xhr, status, error) {
+                    console.log(error);
+                    reject(error);
+                }
+            });
+        });
 
     }
 
-    function getData() {
+    function updateStatus(id_temp_table, rfid_tag_number, output, room_id, reader_id, kategori_pergerakan, keterangan_pergerakan, lokasi_terakhir, nama_lokasi_terakhir, is_legal_moving) {
 
-      <?php
-        // foreach ($ruas as $k => $v) {
-      ?>
+      // alert('Update Status: ' + rfid_tag_number + ' - ' + output + ' - ' + room_id + ' - ' + reader_id + ' - ' + kategori_pergerakan + ' - ' + keterangan_pergerakan + ' - ' + lokasi_terakhir + ' - ' + nama_lokasi_terakhir);
 
-        var $parameter_id = '0';
-        $parameter_id = $('#filter_id_parameter').val();
+        return new Promise(function(resolve, reject) {
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo site_url(); ?>home/update_status/',
+                data: { 
+                  id_temp_table: id_temp_table, 
+                  rfid_tag_number: rfid_tag_number, 
+                  output: output, 
+                  room_id: room_id, 
+                  reader_id: reader_id,
+                  kategori_pergerakan: kategori_pergerakan,
+                  keterangan_pergerakan: keterangan_pergerakan,
+                  lokasi_terakhir: lokasi_terakhir,
+                  nama_lokasi_terakhir: nama_lokasi_terakhir,
+                  is_legal_moving: is_legal_moving
+                },
+                success: function(response) {
+                    var responseData = JSON.parse(response);
+                    if (responseData.is_success == true) {
+                        resolve(responseData.message);
+                    } else {
+                        reject("Update failed.");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log(error);
+                    reject(error);
+                }
+            });
+        });
+    }
 
-        //$("#your_table_id tbody").append('');
-        $('#your_table_id tbody tr').remove();
+    function getLastData() {
 
-        $.getJSON('<?php echo site_url(); ?>home/get_state/'+$parameter_id, function(data) {
+      var flag_moving_in = $('#flag_moving_in').val();
+      var flag_moving_out = $('#flag_moving_out').val();
 
-          let no_urut = 1;
-          for (var i in data) {
+        $.getJSON('<?php echo site_url(); ?>home/get_last_data/', function(data) {
 
-              var nama_parameter = data[i].nama_parameter;
-              var nama_variable = data[i].nama_variable;
+            $("#your_table_id tbody").empty();
 
-              var total_qty_parameter = data[i].total_data;
+            // alert('row count: ' + data.length);
 
-              total_qty_parameter = separatorAngka(total_qty_parameter);
-              
-              var is_parameter_active = data[i].is_parameter_active;
-              var state = data[i].state;
-              state = parseInt(state);
-              var threshold_state_qty_proactive = data[i].threshold_state_qty_proactive;
-              var threshold_state_persentase_proactive = data[i].threshold_state_persentase_proactive;
-              var light_proactive = data[i].light_proactive;
-              var sound_proactive = data[i].sound_proactive;
-              var threshold_state_qty_active = data[i].threshold_state_qty_active;
-              threshold_state_qty_active = parseInt(threshold_state_qty_active);
-              var threshold_state_persentase_active = data[i].threshold_state_persentase_active;
-              var light_active = data[i].light_active;
-              var sound_active = data[i].sound_active;
-              var nama_sound = data[i].nama_sound;
-              var light_color_code = data[i].light_color_code;
+            let no_urut = 1;
+            $.each(data, function(index, element) {
 
-              var status = (state < threshold_state_qty_active) ? 'bg-success':'bg-danger';
+                // scan now
 
-              /*
-              var keterangan_status = (data[i].state < data[i].threshold_state_qty_proactive) ? 'Normal' 
-              :(data[i].state >= data[i].threshold_state_qty_proactive && data[i].state < data[i].threshold_state_qty_active) ? 'Proactive' 
-              :'Alert Active';
-              */
+                var id_temp_table = element.id_temp_table;
+                var room_id_scan = element.room_id;
+                var room_name = element.room_name;
+                var reader_id = element.reader_id;
+                var reader_antena = element.reader_antena;
+                var reader_angle = element.reader_angle;
+                var reader_gate = element.reader_gate;
+                var rfid_tag_number = element.rfid_tag_number;
+                var waktu = element.waktu;
+                var kategori_pergerakan = 'normal';
+                var keterangan_pergerakan = 'normal';
+                var is_legal_moving = element.is_legal_moving;
 
-              var keterangan_status = '';
+                // alert('rfid tag number = ' + rfid_tag_number + ', data last location : ' + room_name + ', terbaca oleh reader bagian : ' + reader_angle);
 
-              if (state < threshold_state_qty_active){
-                keterangan_status = 'Normal';
-              } else {
-                keterangan_status = 'Alert Active';
-              }
+                // Panggil getLastLocation dan tunggu hasilnya
+                getLastLocation(rfid_tag_number).then(function(dataLastLocation) {
 
-              // Append to HTML table
-              var tableRow = '<tr>' +
-                '<td style="text-align:center;">' + no_urut + '</td>' +
-                '<td style="text-align:left;">' + nama_variable + '</td>' +
-                '<td style="text-align:center;">' + total_qty_parameter + '</td>' +
-                
-                '<td style="text-align:center;"><input type="checkbox" value="' + is_parameter_active + '" ' + ((is_parameter_active == 1) ? 'checked' : '') + ' disabled></td>' +
+                    if (dataLastLocation) {
 
-                '<td style="text-align:center;">' + state + '</td>' +
+                        // get last location & position
+                        var kodeBrg = dataLastLocation.kode_aset;
+                        var nup = dataLastLocation.nup;
+                        var tagCode = dataLastLocation.kode_tid;
+                        var namaBrg = dataLastLocation.nama_aset;
+                        var lokasi_terakhir = dataLastLocation.lokasi_moving;
+                        var posisi_aset = dataLastLocation.status;
 
-                '<td style="text-align:center;">' + threshold_state_qty_active + '</td>' +
-                '<td style="text-align:center;">' + threshold_state_persentase_active + '%</td>' +
-                '<td style="text-align:center;">' + ((light_color_code != '')?'<span style="background-color:'+light_color_code+';">Light Color</span>':'') + '</td>' +
-                '<td style="text-align:center;">'+nama_sound+'</td>' +
+                        var lokasi_terakhir_id = dataLastLocation.lokasi_terakhir;
+                        var nama_lokasi_terakhir = dataLastLocation.nama_lokasi_terakhir;
 
-                '<td style="text-align:center;"><div class="' + status + '">' + keterangan_status + '</div></td>' +
-                '</tr>';
+                        // alert('rfid tag number = ' + tagCode + ', lokasi di asset master : ' + lokasi_terakhir + ', status id di asset master = ' + posisi_aset + ', nama lokasi di asset master = ' + nama_lokasi_terakhir);
 
-              $("#your_table_id tbody").append(tableRow);
+                        // alert('rfid tag number = ' + tagCode + ', lokasi di asset master : ' + lokasi + ', status id di asset master = ' + statusId);
 
-              // jalanin voice disini
-              //textToSpeech(nama_parameter + ', ' + nama_variable + ', ' + 'mati');
+                        var output = reader_angle === 'in' ? flag_moving_in : flag_moving_out;
 
-              /*
-              setTimeout(function() {
-                //your code to be executed after 1 second
-              }, 500);
-              */
+                        // alert('reader angle = ' + reader_angle + ', output = ' + output + 'status_id = ' + statusId);
 
-              no_urut=no_urut+1;
-          }
+                        // validasi pergerakan, normal / anomali
+
+                        // alert('room id scan = ' + room_id_scan + ', room id terakhir = ' + lokasi_terakhir, 'posisi aset = ' + posisi_aset);
+
+                        // if (reader_angle == 'in'){
+                        //   pilih_lokasi_terakhir = room_id_scan;
+                        //   pilih_nama_lokasi_terakhir = room_name;
+                        // } else { //if (output == 7){
+                        //   pilih_lokasi_terakhir = lokasi_terakhir_id;
+                        //   pilih_nama_lokasi_terakhir = nama_lokasi_terakhir;
+                        // }
+
+                        // moving di ruangan yang sama
+                        if (room_id_scan == lokasi_terakhir_id){
+
+                          // alert('moving normal');
+
+                          if (reader_angle == 'in'){
+
+                            if (posisi_aset == flag_moving_in){
+                              kategori_pergerakan = 'normal';
+                              keterangan_pergerakan = 'normal';
+                            } else if (posisi_aset == flag_moving_out){
+                            
+                              // disini harus dicek dulu, walaupun aset sudah pasti lagi diluar, tapi dia terbaca sama dengan yang bagian luar ngga
+                              kategori_pergerakan = 'normal';
+                              keterangan_pergerakan = 'normal!';
+
+                            }
+                            
+                          } else { //if (reader_angle == 'out'){
+
+                            // alert('reader angle out' + ', posisi aset = ' + posisi_aset);
+
+                            if (posisi_aset == flag_moving_in){
+
+                              // disini harus dicek dulu, dia kebaca oleh reader bagian dalem ngga
+                              // kategori_pergerakan = 'anomali';
+                              // keterangan_pergerakan = 'terbaca oleh reader bagian luar, tetapi tidak terbaca oleh reader bagian dalam';
+                            
+                              kategori_pergerakan = 'normal';
+                              keterangan_pergerakan = 'normal!';
+
+                            } else {  // if (posisi_aset == flag_moving_out){
+
+                              kategori_pergerakan = 'normal';
+                              keterangan_pergerakan = 'terbaca oleh reader bagian luar, lokasi terakhir masih keluar di ruangan yang sama';
+
+                            }
+
+                          }
+
+                        } else { // moving beda ruangan
+
+                          // alert('moving beda ruangan');
+
+                          // kategori_pergerakan = 'anomali';
+                          // keterangan_pergerakan = 'anomali';
+
+                          if (reader_angle == 'out'){
+
+                            // jika posisi aset terakhir sedang di dalam
+                            if (posisi_aset == flag_moving_in){
+                              kategori_pergerakan = 'anomali';
+                              keterangan_pergerakan = 'moving beda ruangan, tapi tidak terbaca oleh reader bagian luar pada ruangan sebelumnya';
+                            } else { // posisi aset terakhir sedang di luar
+                              kategori_pergerakan = 'normal';
+                              keterangan_pergerakan = 'moving beda ruangan';
+                            }
+
+                          } else if (reader_angle == 'in'){
+
+                            // jika posisi aset terakhir sedang di dalam
+                            if (posisi_aset == flag_moving_in){
+                              kategori_pergerakan = 'anomali';
+                              keterangan_pergerakan = 'moving beda ruangan, tidak terbaca oleh reader bagian luar';
+                            } else { // posisi aset terakhir sedang di luar
+
+                              // berarti dia sudah checkout, di ruangan sebelumnya. tapi dia tidak checkout di ruangan saat ini
+
+                              kategori_pergerakan = 'normal';
+                              keterangan_pergerakan = 'moving beda ruangan';
+
+                            }
+
+                          }
+
+                        } // moving beda ruangan
+
+                        // alert('kategori pergerakan = ' + kategori_pergerakan + ', keterangan pergerakan = ' + keterangan_pergerakan);
+
+                        // alert('ready to update...reader angle out' + ', posisi aset = ' + posisi_aset);
+
+                        updateStatus(id_temp_table, rfid_tag_number, output, room_id_scan, reader_id, kategori_pergerakan, keterangan_pergerakan, room_id_scan, room_name, is_legal_moving).then(function(message) {
+                          //alert(message);
+                          console.log("Status updated:", message);
+                        }).catch(function(error) {
+                          console.log("Error updating status:", error);
+                        });
+
+                        // Append to HTML table
+                        var tableRow = '<tr>' +
+                            '<td style="text-align:center;">' + no_urut + '</td>' +
+                            '<td style="text-align:left;">' + room_name + '</td>' +
+                            '<td style="text-align:center;">' + reader_angle + '</td>' +
+                            '<td style="text-align:center;">' + reader_gate + '</td>' +
+                            '<td style="text-align:center;">' + rfid_tag_number + '</td>' +
+                            '<td style="text-align:center;">' + waktu + '</td>' +
+                            '<td style="text-align:center;">' + kodeBrg + '%</td>' +
+                            '<td style="text-align:center;">'+ nup +'</td>' +
+                            '<td style="text-align:center;">'+ namaBrg +'</td>' +
+                          '</tr>';
+
+                        $("#your_table_id tbody").append(tableRow);
+
+                        no_urut = no_urut + 1;
+
+                    }
+
+                }).catch(function(error) {
+                    console.log("Error fetching last location:", error);
+                });
+
+            });
 
         });
 
-      <?php
-        // }
-      ?>
     }
-    // function getData() {
 
     function textToSpeech(buzzer, text) {
 
@@ -613,9 +771,12 @@
         var bell = document.getElementById(buzzer);
 
         // mainkan suara bell antrian
+        bell.src = bell.src + "?v=" + Math.random(); // Add a random query parameter to the URL to ensure the browser treats it as a new resource
+        bell.type = "audio/wav"; // Set the correct "Content-Type" response header for the audio file
         bell.pause();
         bell.currentTime = 0;
         bell.play();
+        //bell.play();
 
         // set delay antara suara bell dengan suara nomor antrian
         durasi_bell = bell.duration * 770;
@@ -662,13 +823,82 @@
       });
         
     }
-
   </script>
 
   <script type="text/javascript">
 
   $(document).ready(function() {
 
+    $.get("<?= base_url('config/isSystemOn') ?>", function(data, status) {
+
+      if(data == 1) {
+        $("#toggleSwitch").prop('checked', true);
+        $("#toggleText").text("On");
+      } else {
+        $("#toggleSwitch").prop('checked', false);
+        $("#toggleText").text("Off");
+      }
+
+    });
+
+    $("#toggleSwitch").change(function() {
+
+      if(this.checked) {
+        
+        if (confirm("Apakah Anda yakin sistem ingin diaktifkan ?")) {
+
+          $.get("<?= base_url('config/updateToggleSwitch/1') ?>", function(data, status) {
+
+            var dataObj = JSON.parse(data);
+
+            if(dataObj.is_success == true) {
+              //$("#toggleText").text("On");
+              alert("Sistem berhasil diaktifkan !!");
+            } else {
+              //$("#toggleText").text("Off");
+              alert("Sistem gagal diaktifkan !!");
+            }
+
+            location.reload();
+
+          });  
+
+        } else {
+          this.checked = false;
+        }
+
+      } else {
+
+        if (confirm("Apakah Anda yakin sistem ingin dinonaktifkan ?")) {
+
+          //$('#lastSynchronized').html('');
+          $('#info_interval_request').html('');
+
+          $.get("<?= base_url('config/updateToggleSwitch/0') ?>", function(data, status) {
+
+            var dataObj = JSON.parse(data);
+
+            if(dataObj.is_success == true) {
+              //$("#toggleText").text("On");
+              alert("Sistem berhasil dinonaktifkan !!");
+            } else {
+              //$("#toggleText").text("Off");
+              alert("Sistem gagal diaktifkan !!");
+            }
+
+            location.reload();
+
+          });  
+
+        } else {
+          this.checked = true;
+        }
+
+      }
+
+    });
+
+    /*
     socket.onmessage = function(event) {
 
       if (event.data == 'web_socket_online') {
@@ -683,24 +913,7 @@
       }
 
     };
-
-    getData();
-    getStateAlert();
-    getRunningText();
-
-    // just for list data
-    setInterval(getData, $('#interval_get_data').val());
-    
-    // for alert light and sound socket.send('refresh');
-    setInterval(getStateAlert, $('#interval_trigger_alert').val());
-
-    //socket.send('refresh');
-    //console.log('web socket send refresh');
-
-    // just for running text fitur
-    setInterval(getRunningText, $('#interval_trigger_alert').val());
-
-    $('#is_data_ada').hide();
+    */
 
     var text = "Status ATM Down, " + "ada yang mati";
     var interval = 60000; // 60 seconds interval
@@ -708,36 +921,21 @@
 
     // separator
 
-    updateClock();
-    tanggal();
-    jam();
-    setInterval('updateClock()', 1000);
-
-    /*
-    setInterval(function() {
-
-      getStateAlert;
-      console.log('refresh state alert');
-      socket.send('refresh');
-      console.log('web socket send refresh');
-
-    }, $('#interval_trigger_alert').val());
-    */
+    //updateClock();
+    // lastSynchronized();
+    //tanggal();
+    //jam();
+    //setInterval('updateClock()', 1000);
+    // setInterval('lastSynchronized()', 1000);
 
     $('#hitapi_parameter_id').on('change', function(){
       load_dropdown_variable(this.value);
     });
 
     $('#filter_id_parameter').on('change', function(){
-
       //var selected = $(this).find("option:selected").val();
-
       let selected = $(this).val();
       console.log(selected);
-
-      // get data
-      getData();
-
     });
 
   });
@@ -745,6 +943,35 @@
   </script>
 
   <script type="text/javascript">
+
+    function lastSynchronized(){
+      var d = new Date();
+      var month = d.getMonth()+1;
+      var day = d.getDate();
+      var hour = d.getHours();
+      var minute = d.getMinutes();
+      var second = d.getSeconds();
+
+      if(month < 10) {
+        month = '0' + month;
+      }
+      if(day < 10) {
+        day = '0' + day;
+      }
+      if(hour < 10) {
+        hour = '0' + hour;
+      }
+      if(minute < 10) {
+        minute = '0' + minute;
+      }
+      if(second < 10) {
+        second = '0' + second;
+      }
+
+      var dateTime = d.getFullYear() + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second;
+      // $('#lastSynchronized').html('&nbsp;Last Synchronize : ' + dateTime);
+
+    }
 
     function updateClock ( )
     {
@@ -763,7 +990,6 @@
       // Pad the minutes and seconds with leading zeros, if required
       currentMinutes = ( currentMinutes < 10 ? "0" : "" ) + currentMinutes;
       currentSeconds = ( currentSeconds < 10 ? "0" : "" ) + currentSeconds;
-
 
       // Compose the string for display
       //var currentTimeString = "<i>Dari : "+currentHours + ":" + "00" + ":00 - " + currentHours + ":"+currentMinutes+":"+currentSeconds+" "+currentDate+"/"+currentMonth+"/"+currentYear+"</i>";

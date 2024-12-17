@@ -179,6 +179,7 @@ $(document).ready(function() {
             url: "<?php echo site_url(); ?>variable/serverSideDatatables",
             type: "POST"
         },
+        "order": [[1, 'asc']], // Order by the second column by default (index starts from 0)
         columns: [
             { data: "no_urut", className: "dt-center" },
             { data: "nama_parameter", className: "dt-left" },

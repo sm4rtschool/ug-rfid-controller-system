@@ -21,6 +21,7 @@ class Home extends CI_Controller
 		$this->load->library('fungsi');
 		$this->load->model('Homemodel', 'home');
 		$this->load->model('Contentmodel');
+		date_default_timezone_set('Asia/Jakarta');
 	}
 
 	public function index()
@@ -36,27 +37,6 @@ class Home extends CI_Controller
 		);
 		*/
 
-		$parameter = $this->home->get_parameter();
-
-		$array_parameter = array();
-		foreach ($parameter as $val){
-			$array_parameter[$val->id_parameter] = $val->nama_parameter;
-		}
-		
-		$data['area'] = $array_parameter;
-		
-		$data['ruas'] = array(
-		    60 => 'KM 09+200 CIKUNIR 4',
-		    61 => 'KM 26+400 Cibitung'
-		);
-		
-		$variable = $this->home->get_variable_by_id();
-
-		$array_variable = array();
-		foreach ($variable->result() as $val){
-			$array_variable[$val->id_variable] = $val->nama_variable;
-		}
-
 		/*
 		echo '<pre>';
 		print_r($data['area']);
@@ -65,36 +45,127 @@ class Home extends CI_Controller
 		exit;
 		*/
 
-		$qryGetSound = $this->Contentmodel->getSoundToPlay()->result();
-        $data['sound'] = $qryGetSound;
+		$parameter = $this->home->get_parameter();
+
+		$array_parameter = array();
+		foreach ($parameter as $val){
+			$array_parameter[$val->id] = $val->kategori;
+		}
+		
+		$data['kategori'] = $array_parameter;
+
+		$qrypengaturan_sistem = $this->home->qrypengaturan_sistem()->row();
+		$data['qrypengaturan_sistem'] = $qrypengaturan_sistem;
+
+		// $qryGetSound = $this->Contentmodel->getSoundToPlay()->result();
+        // $data['sound'] = $qryGetSound;
 
 		$filter_config = 1;
 		$qrygetConfig = $this->home->getConfig($filter_config)->row();
 		$data['config_list_data'] = $qrygetConfig;
 
-		$filter_config_trigger = 2;
+		$filter_config_trigger = 1;
 		$qrygetConfigTrigger = $this->home->getConfig($filter_config_trigger)->row();
 		$data['config_trigger'] = $qrygetConfigTrigger;
 
-		$filter_config_global_sound = 3;
-		$qrygetConfigGlobalSound = $this->home->getConfig($filter_config_global_sound)->row();
-		$data['config_global_sound'] = $qrygetConfigGlobalSound;
+		// $filter_config_global_sound = 3;
+		// $qrygetConfigGlobalSound = $this->home->getConfig($filter_config_global_sound)->row();
+		// $data['config_global_sound'] = $qrygetConfigGlobalSound;
 
-		$filter_config_apis_url_play_sound = 4;
-		$qrygetConfigApisUrlPlaySound = $this->home->getConfig($filter_config_apis_url_play_sound)->row();
-		$data['config_apis_url_play_sound'] = $qrygetConfigApisUrlPlaySound;
+		// $filter_config_apis_url_play_sound = 4;
+		// $qrygetConfigApisUrlPlaySound = $this->home->getConfig($filter_config_apis_url_play_sound)->row();
+		// $data['config_apis_url_play_sound'] = $qrygetConfigApisUrlPlaySound;
 
-		$filter_config_apis_url_web_socket = 5;
-		$qrygetConfigApisUrlWebSocket = $this->home->getConfig($filter_config_apis_url_web_socket)->row();
-		$data['config_apis_url_web_socket'] = $qrygetConfigApisUrlWebSocket;
+		// $filter_config_apis_url_web_socket = 5;
+		// $qrygetConfigApisUrlWebSocket = $this->home->getConfig($filter_config_apis_url_web_socket)->row();
+		// $data['config_apis_url_web_socket'] = $qrygetConfigApisUrlWebSocket;
 
-		$filter_config_global_light_color = 6;
-		$qrygetConfigGlobalLightColor = $this->home->getConfig($filter_config_global_light_color)->row();
-		$data['config_global_light_color'] = $qrygetConfigGlobalLightColor;
+		// $filter_config_global_light_color = 6;
+		// $qrygetConfigGlobalLightColor = $this->home->getConfig($filter_config_global_light_color)->row();
+		// $data['config_global_light_color'] = $qrygetConfigGlobalLightColor;
+
+		// $filter_config_ip_address_controller = 10;
+		// $qrygetConfigIPAddressController = $this->home->getConfig($filter_config_ip_address_controller)->row();
+		// $data['config_ip_address_controller'] = $qrygetConfigIPAddressController;
 
 		$this->load->view('partials/_mydashboard_header', $data);
 		$this->load->view('home/home', $data);
 
+	}
+
+	public function get_last_data()
+	{
+		$query = $this->home->getLastData();
+		echo json_encode($query->result(), JSON_PRETTY_PRINT);
+	}
+
+	public function get_last_location()
+    {
+
+		$rfid_tag_number = $this->input->get('rfid_tag_number');
+
+        if ($this->home->getLastLocation($rfid_tag_number)->num_rows() > 0) {
+			$is_data_ada = true;
+			$data = $this->home->getLastLocation($rfid_tag_number)->result();
+		} else {
+			$is_data_ada = false;
+			$data = [];
+		}
+
+        $response = array(
+            'is_data_ada' => $is_data_ada,
+            'data' => $data
+        );
+
+        echo json_encode($response, JSON_PRETTY_PRINT);
+
+    }
+
+	public function get_last_detection()
+    {
+
+		$rfid_tag_number = $this->input->get('rfid_tag_number');
+		$room_id = $this->input->get('room_id');
+		$reader_angle = $this->input->get('reader_angle');
+
+        if ($this->home->getLastDetection($rfid_tag_number, $room_id, $reader_angle)->num_rows() > 0) {
+			$is_data_ada = true;
+			// $data = $this->home->getLastDetection($rfid_tag_number)->result();
+		} else {
+			$is_data_ada = false;
+			// $data = [];
+		}
+
+        $response = array(
+            'is_data_ada' => $is_data_ada
+            // 'data' => $data
+        );
+
+        echo json_encode($response, JSON_PRETTY_PRINT);
+
+    }
+
+	public function update_status(){
+		$id_temp_table = $this->input->post('id_temp_table');
+		$rfid_tag_number = $this->input->post('rfid_tag_number');
+		$output = $this->input->post('output');
+		$room_id = $this->input->post('room_id');
+		$reader_id = $this->input->post('reader_id');
+		$kategori_pergerakan = $this->input->post('kategori_pergerakan');
+		$keterangan_pergerakan = $this->input->post('keterangan_pergerakan');
+		$lokasi_terakhir = $this->input->post('lokasi_terakhir');
+		$nama_lokasi_terakhir = $this->input->post('nama_lokasi_terakhir');
+		$is_legal_moving = $this->input->post('is_legal_moving');
+
+		$is_success = $this->home->update_status($id_temp_table, $rfid_tag_number, $output, $room_id, $reader_id, $kategori_pergerakan, $keterangan_pergerakan, $lokasi_terakhir, $nama_lokasi_terakhir, $is_legal_moving);
+		
+		if (!$is_success) {
+			$response = array('is_success' => $is_success, 'message' => 'Status has not been updated.');
+		} else {
+			$response = array('is_success' => $is_success, 'message' => 'Status has been updated.', 'is_legal_moving' => $is_legal_moving);
+		}
+
+		echo json_encode($response, JSON_PRETTY_PRINT);
 	}
 
 	public function get_state(){
@@ -253,6 +324,17 @@ class Home extends CI_Controller
 
 	public function triggerOn(){
 		$this->load->view('home/trigger_on');
+	}
+	
+	public function update_flag_tts(){
+		$id_content = $this->input->post('id_content');
+		$is_success = $this->home->update_flag_tts($id_content);
+		echo json_encode(
+			array(
+				'is_success' => $is_success,
+				'message' => 'Text to Speech has been triggered.'
+			)
+		);
 	}
 	
 }

@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Proactive Warning System</title>
-  <link rel='icon' type='image/x-icon' href='<?php echo base_url(); ?>assets/img/favicon.ico'>
+  <title>RFID Controller System</title>
+  <link rel='icon' type='image/x-icon' href='<?php echo base_url(); ?>assets/img/logo.ico'>
   <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
 
   <!-- Demo Dependencies -->
@@ -11,6 +11,12 @@
   <script src="<?php echo base_url(); ?>assets/js/bootstrap.min.js" type="text/javascript"></script>
   <link href="<?php echo base_url(); ?>assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
   <script src="<?php echo base_url(); ?>assets/js/holder.min.js" type="text/javascript"></script>
+  
+  <!-- FontAwesome 4.3.0 -->
+  <link href="<?php echo base_url(); ?>assets/bootstrap/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+  
+  <!-- Ionicons 2.0.0 -->
+  <link href="<?php echo base_url(); ?>assets/bootstrap/css/ionicons.min.css" rel="stylesheet" type="text/css" />
 
   <script>
     Holder.add_theme("white", { background:"#fff", foreground:"#a7a7a7", size:10 });
@@ -32,6 +38,12 @@
 
   <!-- Dashboard -->
   <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/keen-dashboards.css" />
+
+  <!-- SweetAlert CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+
+  <!-- SweetAlert JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
 
 </head>
 
@@ -79,20 +91,23 @@
         </a>
         -->
 
-        <a class="navbar-brand" href="#"><img style="width:20px;height:20px;" src="<?php echo base_url(); ?>assets/img/logo_jalin.jpeg">&nbsp;&nbsp;Proactive Warning System</a>
+        <a class="navbar-brand" href="#"><img style="width:20px;height:20px;" src="<?php echo base_url(); ?>assets/img/logo.png">&nbsp;&nbsp;RFID Controller System</a>
       </div>
 
       <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-left">
           <li><a href="<?php echo site_url(); ?>">Home</a></li>
+          <li><a href="<?php echo site_url(); ?>controller">Controller</a></li>
+          <li><a href="<?php echo site_url(); ?>handheld">Handheld</a></li>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Parameter<span class="caret"></span></a>
             <ul class="dropdown-menu">
               <!-- Add your sub-menu items here -->
+              <li><a href="<?php echo site_url(); ?>audio">Audio</a></li>
               <li><a href="<?php echo site_url(); ?>config">Config</a></li>
-              <li><a href="<?php echo site_url(); ?>kategori">Kategori</a></li>
-              <li><a href="<?php echo site_url(); ?>variable">Variabel</a></li>
-              <li><a href="<?php echo site_url(); ?>content">Content</a></li>
+              <!-- <li><a href="<?php echo site_url(); ?>kategori">Kategori</a></li>
+              <li><a href="<?php echo site_url(); ?>variable">Variabel</a></li> -->
+              <li><a href="<?php echo site_url(); ?>content">Raw RFID Data</a></li>
             </ul>
           </li>
           <!--<li><a href="<?php echo site_url(); ?>">History</a></li>-->

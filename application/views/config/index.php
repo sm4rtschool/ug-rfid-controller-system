@@ -1,3 +1,50 @@
+<style>
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+</style>
+
 <div class="container-fluid">
 
     <div class="row">
@@ -10,6 +57,75 @@
 
           <button type="button" class="btn btn-primary" onclick="window.location.reload()">Refresh</button>
 
+          <!--<span id="toggleText" style="float: right; margin-left: 10px; text-align: center;">Off</span>-->
+
+          <label class="switch" style="float: right;">
+            <input type="checkbox" id="toggleSwitch">
+            <span class="slider round"></span>
+          </label>
+
+          <strong id="toggleText" style="float: right; margin-right: 13px; text-align: center; font-weight: bold; font-size: 22px; font-style: italic;">Off</strong>
+
+          <script>
+            $(document).ready(function(){
+
+              $("#toggleSwitch").change(function() {
+
+                if(this.checked) {
+                  
+                  if (confirm("Apakah Anda yakin sistem ingin diaktifkan ?")) {
+
+                    $.get("<?= base_url('config/updateToggleSwitch/1') ?>", function(data, status) {
+
+                      var dataObj = JSON.parse(data);
+
+                      if(dataObj.is_success == true) {
+                        //$("#toggleText").text("On");
+                        alert("Sistem berhasil diaktifkan !!");
+                      } else {
+                        //$("#toggleText").text("Off");
+                        alert("Sistem gagal diaktifkan !!");
+                      }
+
+                      location.reload();
+
+                    });  
+
+                  } else {
+                    this.checked = false;
+                  }
+
+                } else {
+
+                  if (confirm("Apakah Anda yakin sistem ingin dinonaktifkan ?")) {
+
+                    $.get("<?= base_url('config/updateToggleSwitch/0') ?>", function(data, status) {
+
+                      var dataObj = JSON.parse(data);
+
+                      if(dataObj.is_success == true) {
+                        //$("#toggleText").text("On");
+                        alert("Sistem berhasil dinonaktifkan !!");
+                      } else {
+                        //$("#toggleText").text("Off");
+                        alert("Sistem gagal diaktifkan !!");
+                      }
+
+                      location.reload();
+
+                    });  
+
+                  } else {
+                    this.checked = true;
+                  }
+
+                }
+
+              });
+
+            });
+          </script>
+
         </div>
         <!-- <div class="chart-hd"> -->
         
@@ -21,6 +137,88 @@
 
 </div>
 <!-- <div class="container-fluid"> -->
+
+<style>
+/* Styling dasar untuk tabel */
+table.dataTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+}
+
+/* Header table styling */
+table.dataTable thead th {
+    background-color: #343a40;
+    color: #ffffff;
+    font-weight: bold;
+    text-align: center;
+    padding: 12px;
+}
+
+/* Row styling */
+table.dataTable tbody tr {
+    transition: background-color 0.3s ease;
+}
+
+table.dataTable tbody tr:hover {
+    background-color: #e9ecef;
+}
+
+/* Cell styling */
+table.dataTable tbody td {
+    padding: 10px;
+    text-align: center;
+    color: #495057;
+}
+
+/* Pagination styling */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    color: #343a40 !important;
+    border: 1px solid #ddd;
+    background: #ffffff;
+    padding: 5px 10px;
+    margin: 2px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background-color: #6c757d;
+    color: #ffffff !important;
+}
+
+/* Active page styling */
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background-color: #343a40 !important;
+    color: #ffffff !important;
+}
+
+/* Search box and entries dropdown */
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+    border: 1px solid #ddd;
+    padding: 5px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    color: #495057;
+}
+
+/* Information text styling */
+.dataTables_wrapper .dataTables_info {
+    font-size: 14px;
+    color: #343a40;
+    margin-top: 10px;
+}
+
+/* Table border radius */
+table.dataTable {
+    border-radius: 8px;
+    overflow: hidden;
+}
+</style>
 
 <!-- Assuming you want to display the content table data in a datatable on the same page -->
 <!-- Add the following code snippet after the <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script> line in your HTML file-->
@@ -61,6 +259,18 @@
 <!-- Initialize DataTable on the table you want to display content data -->
 <script>
 $(document).ready(function() {
+
+  $.get("<?= base_url('config/isSystemOn') ?>", function(data, status) {
+
+    if(data == 1) {
+      $("#toggleSwitch").prop('checked', true);
+      $("#toggleText").text("On");
+    } else {
+      $("#toggleSwitch").prop('checked', false);
+      $("#toggleText").text("Off");
+    }
+
+  });
   
   $('#edit_value').keyup(function(){
     FormNum(this);
@@ -90,6 +300,8 @@ $(document).ready(function() {
             { data: "config_name", className: "dt-left" },
             { data: "variable", className: "dt-left" },
             { data: "value", className: "dt-right" },
+            { data: "owner", className: "dt-center" },
+            { data: "keterangan", className: "dt-left" },
             { data: "action", className: "dt-center" },
         ]
     });
@@ -132,26 +344,30 @@ function deleteConfig(id){
 
     // Ask for confirmation before proceeding with deletion
     if(confirm("Are you sure you want to delete this data ?")){
-        $.ajax({
-            url: "<?php echo site_url(); ?>config/delete/"+id,
-            type: "POST",
-            success: function(response){
-                // handle success response here
-                //console.log(response);
-                var responseData = JSON.parse(response);
+        
+      $.ajax({
+        url: "<?php echo site_url(); ?>config/delete/"+id,
+        type: "POST",
+        success: function(response){
+                
+          // handle success response here      
+          //console.log(response);
+                
+          var responseData = JSON.parse(response);
+      
+          if (responseData.is_success == true){        
+            alert(responseData.message);        
+            location.reload();        
+            return false;
+          }
 
-                if (responseData.is_success == true){
-                    alert(responseData.message);
-                    location.reload();
-                    return false;
-                }
+        },
+        error: function(xhr, status, error){
+          // handle error here
+        }
 
-            },
-            error: function(xhr, status, error){
-                // handle error here
-            }
+      });
 
-        });
     }
     
 }
@@ -247,9 +463,11 @@ function update() {
 
             <tr>
               <th style="width: 5%;">No.</th>
-              <th style="width: 55%; text-align: center;">Config Name</th>
+              <th style="width: 30%; text-align: center;">Config Name</th>
               <th style="width: 20%; text-align: center;">Variable</th>
               <th style="width: 10%; text-align: center;">Value</th>
+              <th style="width: 10%; text-align: center;">Owner</th>
+              <th style="width: 15%; text-align: center;">Keterangan</th>
               <th style="width: 10%;">Status</th>
             </tr>
 

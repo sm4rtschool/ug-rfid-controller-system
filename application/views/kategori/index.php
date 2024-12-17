@@ -8,7 +8,7 @@
 
           <strong>Parameter Kategori&nbsp;</strong>
 
-          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#databaseModal">Add</button>
+          <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#databaseModal">Add</button> -->
           <button type="button" class="btn btn-primary" onclick="window.location.reload()">Refresh</button>
 
         </div>
@@ -89,7 +89,7 @@ $(document).ready(function() {
         columns: [
             { data: "no_urut", className: "dt-center" },
             { data: "nama_parameter", className: "dt-left" },
-            { data: "total_data", className: "dt-right" },
+            // { data: "total_data", className: "dt-right" },
             { data: "action", className: "dt-center" },
         ]
     });
@@ -241,7 +241,6 @@ function update() {
             <tr>
               <th style="width: 5%;">No.</th>
               <th style="width: 75%; text-align: center;">Nama Parameter</th>
-              <th style="width: 10%; text-align: center;">Total Data</th>
               <th style="width: 10%;">Status</th>
             </tr>
 
@@ -281,11 +280,7 @@ function update() {
                       <div class="form-group">
                           <label for="parameter_id">Kategori</label>
                           <input type="text" class="form-control" name="nama_parameter" id="nama_parameter" value="">
-                      </div>
-                      
-                      <div class="form-group">
-                          <label for="total_data">Total</label>
-                          <input type="text" class="form-control" id="total_data" name="total_data" value="0">
+                          <input type="hidden" class="form-control" id="total_data" name="total_data" value="0">
                       </div>
 
                   </form>
@@ -315,11 +310,7 @@ function update() {
                             <input type="text" class="form-control" name="edit_nama_parameter" id="edit_nama_parameter" value="">
                             <input type="hidden" name="hidden_edit_id_parameter" id="hidden_edit_id_parameter" value="">
                             <input type="hidden" name="hidden_edit_old_nama_parameter" id="hidden_edit_old_nama_parameter" value="">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="edit_total_data">Total</label>
-                            <input type="text" class="form-control" id="edit_total_data" name="edit_total_data">
+                            <input type="hidden" class="form-control" id="edit_total_data" name="edit_total_data" value="0">
                         </div>
 
                     </form>

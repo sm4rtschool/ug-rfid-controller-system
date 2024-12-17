@@ -16,10 +16,8 @@ class Variable extends CI_Controller {
 
     public function serverSideDatatables()
     {
-        // set column field database for datatable orderable
-        $columns = array(
-            0 => 'nama_variable'
-        );
+        
+        $columns = array('no_urut', 'nama_parameter', 'nama_variable', 'action'); // Sesuaikan dengan urutan kolom di tabel
 
         // set column field database for datatable searchable
         $searchable = array(

@@ -54,6 +54,8 @@ class Config extends CI_Controller {
                 $nestedData['config_name'] = $row->config_name;
                 $nestedData['variable'] = $row->variable;
                 $nestedData['value'] = $this->fungsi->pecah($row->value);
+                $nestedData['owner'] = $row->owner;
+                $nestedData['keterangan'] = $row->keterangan;
                 $nestedData['action'] = '<button class="btn btn-sm btn-info" type="button" title="Edit" onclick="editData(' . "'" . $row->id_config . "'" . ')">Edit</i></button>';
                 $data[] = $nestedData;
 
@@ -186,6 +188,32 @@ class Config extends CI_Controller {
     public function delete($id){
         $this->Configmodel->deleteConfig($id);
         redirect('config');
+    }
+
+    public function isSystemOn(){
+        $isSystemOn = $this->Configmodel->isSystemOn()->row()->is_system_on;
+        echo $isSystemOn;
+    }
+
+    public function updateToggleSwitch(){
+
+        $value = $this->uri->segment(3);
+        $is_success = $this->Configmodel->updateToggleSwitch($value);
+
+        if ($is_success) {
+            $message = "Data updated successfully";
+        } else {
+            $message = "Failed to update data";
+        }
+
+        $output = array(
+            "is_success" => $is_success,
+            "message" => $message
+        );
+
+        //output to json format
+        echo json_encode($output);
+
     }
 
 }

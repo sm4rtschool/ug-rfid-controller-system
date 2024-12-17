@@ -11,14 +11,16 @@ class Variablesmodel extends CI_Model {
     public function get_datatables_variable($limit, $start, $order, $dir, $search, $searchable)
     {
         $this->db->limit($limit, $start);
+        
         $this->db->order_by($order, $dir);
+
         //$this->db->like($searchable[0], $search);
         $this->db->select('*');
         $this->db->from('parameter a');
         $this->db->join('variable b', 'b.parameter_id = a.id_parameter');
         //$this->db->where('a.id_parameter', $search);
         return $this->db->get()->result();
-        //echo $this->db->last_query();
+        echo $this->db->last_query();
     }
 
     public function variable_search($limit, $start, $search, $order, $dir){

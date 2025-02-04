@@ -40,9 +40,9 @@ class Homemodel extends CI_Model
 
   function getLastData(){
     $this->db->select('*');
-    $this->db->from('tag_temp_table');
+    $this->db->from('tag_temp_table_process');
     $this->db->where('output', 0);
-    $this->db->order_by('id_temp_table', 'asc');
+    // $this->db->order_by('id_temp_table', 'asc');
     
     $query = $this->db->get();
     return $query;
@@ -67,9 +67,9 @@ class Homemodel extends CI_Model
     return $query;
   }
 
-  function update_status($id_temp_table, $rfid_tag_number, $output, $room_id, $reader_id, $kategori_pergerakan, $keterangan_pergerakan, $lokasi_terakhir, $nama_lokasi_terakhir, $is_legal_moving){
+  function update_status($id_temp_table, $rfid_tag_number, $output, $room_id, $reader_id, $kategori_pergerakan, $keterangan_pergerakan, $lokasi_terakhir, $nama_lokasi_terakhir, $is_legal_moving, $borrow){
 
-    $this->db->trans_start();
+    // $this->db->trans_start();
 
     $qrypengaturan_sistem = $this->qrypengaturan_sistem()->row();
     $flag_moving_in = $qrypengaturan_sistem->flag_moving_in;
@@ -85,28 +85,6 @@ class Homemodel extends CI_Model
 
     // update temp table
 
-    // if ($output == 'In'){
-      
-    //   $data = array(
-    //     'output' => $status_id, 
-    //     'rfid_tag_number' => $rfid_tag_number, 
-    //     'kategori_pergerakan' => $kategori_pergerakan, 
-    //     'keterangan_pergerakan' => $keterangan_pergerakan,
-    //     'lokasi_terakhir_id' => $lokasi_terakhir,
-    //     'nama_lokasi_terakhir' => $nama_lokasi_terakhir
-    //   );
-
-    // } else {
-
-    //   $data = array(
-    //     'output' => $status_id, 
-    //     'rfid_tag_number' => $rfid_tag_number, 
-    //     'kategori_pergerakan' => $kategori_pergerakan, 
-    //     'keterangan_pergerakan' => $keterangan_pergerakan
-    //   );
-
-    // }
-
     $data = array(
       'output' => $status_id, 
       'rfid_tag_number' => $rfid_tag_number, 
@@ -117,17 +95,56 @@ class Homemodel extends CI_Model
     );
 
     $this->db->where('id_temp_table', $id_temp_table);
-    $this->db->update('tag_temp_table', $data);
+    $this->db->update('tag_temp_table_process', $data);
 
     // update asset master
 
-    $data_asset_master = array(
-      'status' => $status_id, 
-      'lokasi_moving' => $room_id_asset,
-      'lokasi_terakhir' => $lokasi_terakhir,
-      'nama_lokasi_terakhir' => $nama_lokasi_terakhir,
-      'tipe_moving' => $is_legal_moving
-    );
+    if ($output == 'In'){
+
+      if ($borrow == 1) {
+
+        $data_asset_master = array(
+          // 'status' => $status_id, 
+          // 'lokasi_moving' => $room_id_asset,
+          'lokasi_terakhir' => $lokasi_terakhir,
+          'nama_lokasi_terakhir' => $nama_lokasi_terakhir,
+          'tipe_moving' => $is_legal_moving
+        );
+        
+      } else {
+       
+        $data_asset_master = array(
+          'status' => $status_id, 
+          'lokasi_moving' => $room_id_asset,
+          'lokasi_terakhir' => $lokasi_terakhir,
+          'nama_lokasi_terakhir' => $nama_lokasi_terakhir,
+          'tipe_moving' => $is_legal_moving
+        );
+
+      }
+
+    } else {
+
+      if ($borrow == 1) {
+        $data_asset_master = array(
+          // 'status' => $status_id, 
+          'lokasi_terakhir' => $lokasi_terakhir,
+          'nama_lokasi_terakhir' => $nama_lokasi_terakhir,
+          'tipe_moving' => $is_legal_moving
+        );
+      } else {
+        $data_asset_master = array(
+          'status' => $status_id, 
+          'lokasi_terakhir' => $lokasi_terakhir,
+          'nama_lokasi_terakhir' => $nama_lokasi_terakhir,
+          'tipe_moving' => $is_legal_moving
+        );
+      }
+      
+    }
+
+    $this->db->where('output !=', 0);
+    $this->db->delete('tag_temp_table_process');
 
     $this->db->where('kode_tid', $rfid_tag_number);
     $this->db->update('tb_master_aset', $data_asset_master);
@@ -146,9 +163,9 @@ class Homemodel extends CI_Model
 
     $this->db->insert('tb_asset_moving', $data);
 
-    $this->db->trans_complete();
+    // $this->db->trans_complete();
 
-    return $this->db->trans_status();
+    // return $this->db->trans_status();
 
   }
 

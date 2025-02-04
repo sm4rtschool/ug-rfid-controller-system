@@ -96,9 +96,10 @@
 
       <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-left">
-          <li><a href="<?php echo site_url(); ?>">Home</a></li>
+          <!-- <li><a href="<?php echo site_url(); ?>">Home</a></li> -->
+          <li><a href="<?php echo site_url(); ?>validation">Home</a></li>
           <li><a href="<?php echo site_url(); ?>controller">Controller</a></li>
-          <li><a href="<?php echo site_url(); ?>handheld">Handheld</a></li>
+          <!-- <li><a href="<?php echo site_url(); ?>validation">Validation</a></li> -->
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Parameter<span class="caret"></span></a>
             <ul class="dropdown-menu">

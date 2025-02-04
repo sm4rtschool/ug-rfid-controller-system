@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Controllermodel extends CI_Model
+class Validationmodel extends CI_Model
 {
   
   private $CI;

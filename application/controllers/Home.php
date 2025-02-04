@@ -156,8 +156,9 @@ class Home extends CI_Controller
 		$lokasi_terakhir = $this->input->post('lokasi_terakhir');
 		$nama_lokasi_terakhir = $this->input->post('nama_lokasi_terakhir');
 		$is_legal_moving = $this->input->post('is_legal_moving');
+		$borrow = $this->input->post('borrow');
 
-		$is_success = $this->home->update_status($id_temp_table, $rfid_tag_number, $output, $room_id, $reader_id, $kategori_pergerakan, $keterangan_pergerakan, $lokasi_terakhir, $nama_lokasi_terakhir, $is_legal_moving);
+		$is_success = $this->home->update_status($id_temp_table, $rfid_tag_number, $output, $room_id, $reader_id, $kategori_pergerakan, $keterangan_pergerakan, $lokasi_terakhir, $nama_lokasi_terakhir, $is_legal_moving, $borrow);
 		
 		if (!$is_success) {
 			$response = array('is_success' => $is_success, 'message' => 'Status has not been updated.');

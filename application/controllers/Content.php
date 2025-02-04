@@ -101,15 +101,16 @@ class Content extends CI_Controller
                 $nestedData['reader_gate'] = $row->reader_gate;
                 $nestedData['reader_angle'] = $row->reader_angle;
                 $nestedData['waktu'] = $row->waktu;
+                $nestedData['rfid_tag_number'] = $row->rfid_tag_number;
                 $nestedData['Kode Brg'] = $row->kode_aset;
                 $nestedData['NUP'] = $row->nup;
                 $nestedData['Nama Brg'] = $row->nama_aset;
-                $nestedData['kategori_pergerakan'] = $kategori_pergerakan;
+                // $nestedData['kategori_pergerakan'] = $kategori_pergerakan;
 
-                $is_legal_moving = ($row->is_legal_moving == 1 ? '<span style="color:green;">Legal</span>' : '<span style="color:red;">Illegal</span>');
-                $nestedData['is_legal_moving'] = $is_legal_moving;
+                // $is_legal_moving = ($row->is_legal_moving == 1 ? '<span style="color:green;">Legal</span>' : '<span style="color:red;">Illegal</span>');
+                // $nestedData['is_legal_moving'] = $is_legal_moving;
 
-                $nestedData['keterangan_pergerakan'] = $row->keterangan_pergerakan;
+                // $nestedData['keterangan_pergerakan'] = $row->keterangan_pergerakan;
                 $data[] = $nestedData;
             }
         }
@@ -124,44 +125,93 @@ class Content extends CI_Controller
         echo json_encode($json_data);
     }
 
+    public function serverSideDataAset()
+    {
+        //$this->load->model('Contentmodel');
+        $columns = array(
+            0 => 'id_aset',
+            1 => 'nama_aset',
+            2 => 'kode_tid',
+        );
+
+        $limit = $this->input->post('length');
+        $start = $this->input->post('start');
+        $order = $columns[$this->input->post('order')[0]['column']];
+        $dir = $this->input->post('order')[0]['dir'];
+        $filter_id_parameter = $this->input->post('filter_id_parameter');
+
+        $totalData = $this->Contentmodel->count_all_aset();
+        $totalFiltered = $totalData;
+
+        if(empty($this->input->post('search')['value'])) {
+            $contents = $this->Contentmodel->get_aset($limit, $start, $order, $dir, $filter_id_parameter);
+        } else {
+            $search = $this->input->post('search')['value'];
+            $contents =  $this->Contentmodel->content_search_aset($limit, $start, $search, $order, $dir);
+            $totalFiltered = $this->Contentmodel->content_search_count_aset($search);
+        }
+
+        $data = array();
+        if(!empty($contents)) {
+            $autoNumber = $start + 1;
+            foreach($contents as $row) {
+
+                // $nestedData['no'] = $autoNumber;
+                $autoNumber++;
+                $nestedData['id_aset'] = $row->id_aset;
+                $nestedData['nama_aset'] = $row->nama_aset;
+                $nestedData['kode_tid'] = $row->kode_tid;
+
+                $data[] = $nestedData;
+            }
+        }
+
+        $json_data = array(
+            "draw"            => intval($this->input->post('draw')),
+            "recordsTotal"    => intval($totalData),
+            "recordsFiltered" => intval($totalFiltered),
+            "data"            => $data
+        );
+
+        echo json_encode($json_data);
+    }
+
+
     public function store()
     {
         
         // Add your store logic here
-        $parameter_id = $this->input->post('parameter_id');
-        $variable_id = $this->input->post('variable_id');
+        $room_id = $this->input->post('ruangan_id');
+        $room_name = $this->input->post('room_name');
 
-        $is_parameter_active = $this->input->post('is_parameter_active');
-
-        $free_text_tts = $this->input->post('free_text_tts');
+        $reader_id = $this->input->post('reader_id');
+        $reader_antena = $this->input->post('reader_antena');
+        $reader_angle = $this->input->post('reader_angle');
+        $reader_gate = $this->input->post('reader_gate');
+        $rfid_tag_number = $this->input->post('rfid_tag_number');
+        $is_legal_moving = $this->input->post('tipe_moving');
 
         $data = [
-            'parameter_id' => $parameter_id,
-            'variable_id' => $variable_id,
-            'is_parameter_active' => $is_parameter_active,
-            'free_text_tts' => $free_text_tts
+            'lokasi_terakhir_id' => $room_id,
+            'nama_lokasi_terakhir' => $room_name,
+            'room_id' => $room_id,
+            'room_name' => $room_name,
+            'reader_id' => $reader_id,
+            'reader_antena' => $reader_antena,
+            'reader_angle' => $reader_angle,
+            'reader_gate' => $reader_gate,
+            'rfid_tag_number' => $rfid_tag_number,
+            'is_legal_moving' => $is_legal_moving
         ];
 
-        $count_content = $this->Contentmodel->getParameterVariable($parameter_id, $variable_id)->num_rows();
+        // Save the data to the database
+        $is_success = $this->Contentmodel->insert_content($data);
 
-        if ($count_content > 0) {
-            $is_success = false;
-            $message = "Data already exists";
+        if ($is_success) {
+            $message = "Data inserted successfully";
         } else {
-
-            // Save the data to the database
-            $is_success = $this->Contentmodel->insert_content($data);
-
-            if ($is_success) {
-                $message = "Data inserted successfully";
-            } else {
-                $message = "Failed to insert data";
-            }
-
+            $message = "Failed to insert data";
         }
-
-        // Redirect to a success page
-        //redirect('content');
 
         $output = array(
 			"is_success" => $is_success,
@@ -295,12 +345,12 @@ class Content extends CI_Controller
         echo json_encode($output);
     }
 
-    function load_dropdown_parameter()
+    function load_dropdown_aset()
 	{
 
-		if ($this->Contentmodel->getParameter('')->num_rows() > 0){
+		if ($this->Contentmodel->getAset('')->num_rows() > 0){
 			$is_data_ada = TRUE;
-			$list_data = $this->Contentmodel->getParameter('')->result_array();
+			$list_data = $this->Contentmodel->getAset('')->result_array();
 		} else {
 			$is_data_ada = FALSE;
 		}
@@ -312,8 +362,8 @@ class Content extends CI_Controller
 
 			$row = array();
 
-			$row['id_parameter'] = $qryget['id_parameter'];
-			$row['nama_parameter'] = $qryget['nama_parameter'];
+			$row['id_aset'] = $qryget['id_aset'];
+			$row['nama_aset'] = $qryget['nama_aset'];
 			$ddata[] = $row;
 		
 		}
@@ -328,14 +378,12 @@ class Content extends CI_Controller
 		
 	}
 
-    function load_dropdown_variable()
+    function load_dropdown_ruangan()
 	{
-		
-		$id_parameter = $this->input->post('id_parameter', true);
 
-		if ($this->Contentmodel->getVariable($id_parameter, '')->num_rows() > 0){
+		if ($this->Contentmodel->getRuangan('')->num_rows() > 0){
 			$is_data_ada = TRUE;
-			$list_data = $this->Contentmodel->getVariable($id_parameter, '')->result_array();
+			$list_data = $this->Contentmodel->getRuangan('')->result_array();
 		} else {
 			$is_data_ada = FALSE;
 		}
@@ -347,8 +395,43 @@ class Content extends CI_Controller
 
 			$row = array();
 
-			$row['id_variable'] = $qryget['id_variable'];
-			$row['nama_variable'] = $qryget['nama_variable'];
+			$row['id'] = $qryget['id'];
+			$row['ruangan'] = $qryget['ruangan'];
+			$ddata[] = $row;
+		
+		}
+
+		$output = array(
+			"is_data_ada" => $is_data_ada,
+			"list_data" => $ddata,
+		);
+		
+		//output to json format
+		echo json_encode($output);
+		
+	}
+
+    function load_dropdown_reader()
+	{
+		
+		$id_ruangan = $this->input->post('id_ruangan', true);
+
+		if ($this->Contentmodel->getReader($id_ruangan, '')->num_rows() > 0){
+			$is_data_ada = TRUE;
+			$list_data = $this->Contentmodel->getReader($id_ruangan, '')->result_array();
+		} else {
+			$is_data_ada = FALSE;
+		}
+
+		$ddata = array();
+
+		foreach ($list_data as $qryget) 
+		{
+
+			$row = array();
+
+			$row['reader_id'] = $qryget['reader_id'];
+			$row['reader_name'] = $qryget['reader_name'];
 			$ddata[] = $row;
 		
 		}
@@ -478,15 +561,49 @@ class Content extends CI_Controller
         $this->load->view('content/play_sound');
     }
 
-    function getParameterById()
+    function getRuanganById()
     {
-        $id_parameter = $this->uri->segment(3);
-        $data = $this->Contentmodel->getParameterById($id_parameter)->row();
+        $ruangan_id = $this->uri->segment(3);
+        $data = $this->Contentmodel->getRuanganById($ruangan_id)->row();
 
         if ($data) {
             $output = array(
-                'id_parameter' => $data->id_parameter,
-                'nama_parameter' => $data->nama_parameter            );
+                'ruangan_id' => $data->id,
+                'ruangan' => $data->ruangan            
+            );
+        }
+
+        echo json_encode($output);
+    }
+
+    function getReaderById()
+    {
+        $reader_id = $this->uri->segment(3);
+        $data = $this->Contentmodel->getReaderById($reader_id)->row();
+
+        if ($data) {
+            $output = array(
+                'reader_id' => $data->reader_id,
+                'reader_name' => $data->reader_name,
+                'reader_antena' => $data->reader_antena,
+                'reader_angle' => $data->reader_angle,
+                'reader_gate' => $data->reader_gate,
+            );
+        }
+
+        echo json_encode($output);
+    }
+
+    function getAsetById()
+    {
+        $id_aset = $this->uri->segment(3);
+        $data = $this->Contentmodel->getAsetById($id_aset)->row();
+
+        if ($data) {
+            $output = array(
+                'id_aset' => $data->id_aset,
+                'rfid_tag_number' => $data->kode_tid,            
+            );
         }
 
         echo json_encode($output);

@@ -80,9 +80,10 @@ input:checked + .slider:before {
 
           <strong id="toggleText" style="float: left; margin-left: 10px; margin-right: 5px; text-align: center; font-weight: small; font-size: 21px; font-style: italic;">Off</strong>
 
-          <input type="hidden" name="protocol_ws_server" id="protocol_ws_server" value="<?php echo $qrypengaturan_sistem->protocol_ws_server; ?>">
-          <input type="hidden" name="ip_address_server" id="ip_address_server" value="<?php echo $qrypengaturan_sistem->ip_address_server; ?>">
-          <input type="hidden" name="port_ws_server" id="port_ws_server" value="<?php echo $qrypengaturan_sistem->port_ws_server; ?>">
+          <input type="hidden" name="protocol_ws_server" id="protocol_ws_server" value="<?php echo $qrypengaturan_sistem->validation_protocol_ws_server; ?>">
+          <input type="hidden" name="ip_address_server" id="ip_address_server" value="<?php echo $qrypengaturan_sistem->validation_ip_address_server; ?>">
+          <input type="hidden" name="port_ws_server" id="port_ws_server" value="<?php echo $qrypengaturan_sistem->validation_port_ws_server; ?>">
+          <input type="hidden" name="auto_reconnect" id="auto_reconnect" value="<?php echo $qrypengaturan_sistem->validation_auto_reconnect; ?>">
 
           <input type="hidden" name="timeout_duration" id="timeout_duration" value="<?php echo $qrypengaturan_sistem->timeout_duration; ?>">
           <input type="hidden" name="is_system_on" id="is_system_on" value="<?php echo $qrypengaturan_sistem->is_system_on; ?>">
@@ -147,17 +148,16 @@ input:checked + .slider:before {
 
             <tr>
               <th style="text-align: center;">No</th>
-              <th style="text-align: center;">ID</th>
-              <th style="text-align: center;">TID</th>
-              <th style="text-align: center;">EPC</th>
+              <th style="text-align: center;">Ruangan</th>
+              <th style="text-align: center;">Gate</th>
+              <th style="text-align: center;">RFID Tag Number</th>
+              <th style="text-align: center;">Nama Aset</th>
+              <th style="text-align: center;">Kode Aset</th>
+              <th style="text-align: center;">NUP</th>
               <th style="text-align: center;">Status</th>
               <th style="text-align: center;">Waktu</th>
-              <th style="text-align: center;">Description</th>
               <th style="text-align: center;">Categori</th>
-              <th style="text-align: center;">Flag Alarm</th>
-              <th style="text-align: center;">Antena</th>
-              <th style="text-align: center;">Alias Antenna</th>
-              <th style="text-align: center;">No. SKU</th>
+              <th style="text-align: center;">Description</th>
             </tr>
 
         </thead>
@@ -399,6 +399,10 @@ input:checked + .slider:before {
   var ip_address_server = $('#ip_address_server').val();
   var port_ws_server = $('#port_ws_server').val();
   var protocol_ws_server = $('#protocol_ws_server').val();
+  var auto_reconnect = $('#auto_reconnect').val();
+
+  // ws://localhost:8080
+  // const socket = new WebSocket('ws' + '://' + 'localhost' + ':' + '8080');
   const socket = new WebSocket(protocol_ws_server + '://' + ip_address_server + ':' + port_ws_server);
 
   socket.onopen = function(event) {
@@ -410,10 +414,17 @@ input:checked + .slider:before {
   };
 
   socket.onclose = function(e) {
-    console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
+
+    console.log('Socket is closed. Reconnect will be attempted in ', auto_reconnect, ' ms.', e.reason);
+
+    const messageArea = document.getElementById('messageArea');
+    messageArea.innerHTML = '';
+    messageArea.innerHTML += 'Status : Disconnected from Server';
+
     setTimeout(function() {
       location.reload();
-    }, 5000);
+    }, auto_reconnect);
+
   };
 
   socket.onerror = function(err) {
@@ -653,6 +664,7 @@ input:checked + .slider:before {
     let tidCount = {}; // Objek untuk menghitung frekuensi pembacaan TID
     const eventInterval = 60000; // 1 menit
     let lastCheckTime = Date.now();
+    var no = 1;
 
     function resetPostTimer() {
 
@@ -670,119 +682,44 @@ input:checked + .slider:before {
 
     socket.onmessage = function (event) {
 
-        var parsedData = JSON.parse(event.data);
-        var event_name = parsedData.event;
+      var parsedData = JSON.parse(event.data);
+      var event_name = parsedData.event;
 
-        if (event_name === 'response-db-storage-rfid-list-check') {
-            const messageArea = document.getElementById('messageArea');
-            messageArea.innerHTML = '';
-            messageArea.innerHTML += 'Receive Data from Server';
+      if (event_name === 'assetUpdate') {
 
-            try {
-                var tid = parsedData.value.tid;
-                var alias_antenna = parsedData.value.alias_antenna;
+        const room_name = parsedData.data.room_name;
+        const reader_gate = parsedData.data.reader_gate;
+        const rfid_tag_number = parsedData.data.rfid_tag_number;
+        const nama_aset = parsedData.data.nama_aset;
+        const kode_aset = parsedData.data.kode_aset;
+        const nup = parsedData.data.nup;
+        const reader_angle = parsedData.data.reader_angle;
+        const timestamp = parsedData.data.timestamp;
+        const kategori_pergerakan = parsedData.data.kategori_pergerakan;
+        const keterangan_pergerakan = parsedData.data.keterangan_pergerakan;
 
-                var isExisting = uniqueDataArray.some(data => data.tid === tid && data.alias_antenna === alias_antenna);
+        $('#your_table_id tbody').prepend(`
+          <tr>
+              <td style="text-align: center;">${no++}</td>
+              <td style="text-align: center;">${room_name}</td>
+              <td style="text-align: center;">${reader_gate}</td>
+              <td style="text-align: center;">${rfid_tag_number}</td>
+              <td style="text-align: center;">${nama_aset}</td>
+              <td style="text-align: center;">${kode_aset}</td>
+              <td style="text-align: center;">${nup}</td>
+              <td style="text-align: center;">${reader_angle}</td>
+              <td style="text-align: center;">${timestamp}</td>
+              <td style="text-align: center;">${kategori_pergerakan}</td>
+              <td style="text-align: center;">${keterangan_pergerakan}</td>
+          </tr>
+        `);
 
-                if (!isExisting) {
-
-                    var waktu = new Date().toISOString();
-
-                    uniqueDataArray.push({
-                        id: parsedData.value.id,
-                        tid: tid,
-                        epc: parsedData.value.epc,
-                        status: parsedData.value.status,
-                        created_time: waktu,
-                        description: parsedData.value.description,
-                        category: parsedData.value.category,
-                        flag_alarm: parsedData.value.flag_alarm,
-                        ant: parsedData.value.ant,
-                        alias_antenna: parsedData.value.alias_antenna,
-                        no_sku: parsedData.value.no_sku
-                    });
-
-                    $('#your_table_id tbody').append(`
-                        <tr>
-                            <td style="text-align: center;">${uniqueDataArray.length}</td>
-                            <td style="text-align: center;">${parsedData.value.id}</td>
-                            <td style="text-align: center;">${parsedData.value.tid}</td>
-                            <td style="text-align: center;">${parsedData.value.epc}</td>
-                            <td style="text-align: center;">${parsedData.value.status}</td>
-                            <td style="text-align: center;">${waktu}</td>
-                            <td style="text-align: center;">${parsedData.value.description}</td>
-                            <td style="text-align: center;">${parsedData.value.category}</td>
-                            <td style="text-align: center;">${parsedData.value.flag_alarm}</td>
-                            <td style="text-align: center;">${parsedData.value.ant}</td>
-                            <td style="text-align: center;">${parsedData.value.alias_antenna}</td>
-                            <td style="text-align: center;">${parsedData.value.no_sku}</td>
-                        </tr>
-                    `);
-
-                    // console.log('Data baru ditambahkan ke array:', parsedData.value);
-
-                    resetPostTimer();
-                    
-                    // Reset counter untuk TID baru
-                    if (tidCount[tid]) delete tidCount[tid];
-
-                } else {
-
-                    // console.log('Data dengan TID ini sudah ada:', tid);
-
-                    const currentTime = Date.now();
-
-                    // Tambahkan TID ke counter
-                    if (!tidCount[tid]) {
-
-                        tidCount[tid] = {
-                            count: 1,
-                            startTime: currentTime,
-                            is_overlap: false
-                        };
-
-                        const firstReadTime = new Date(tidCount[tid].startTime).toLocaleString();
-                        console.log(`Menambahkan TID: ${tid} ke counter. Waktu pertama kali terbaca: ${firstReadTime}`);
-
-                    } else {
-                        tidCount[tid].count += 1;
-                    }
-
-                    // Periksa jika TID sama terus terbaca dalam 1 menit
-                    if (currentTime - tidCount[tid].startTime < eventInterval) {
-                        // console.log(`TID: ${tid} telah terbaca ${tidCount[tid].count} kali dalam 1 menit.`);
-                        resetPostTimer(); // Jalankan resetPostTimer
-                    }
-
-                    // Reset counter jika sudah lebih dari 1 menit
-                    if (currentTime - tidCount[tid].startTime >= eventInterval) {
-
-                        tidCount[tid].count = 1;
-                        tidCount[tid].startTime = currentTime;
-                        tidCount[tid].is_overlap = true;
-
-                        const resetTime = new Date().toLocaleString();
-                        console.log(`Reset counter untuk TID: ${tid} pada waktu: ${resetTime}`);
-
-                        // swal({
-                        //     title: "Info",
-                        //     text: `Data dengan TID: ${tid} sudah 1 menit terbaca oleh reader.`,
-                        //     icon: "info",
-                        //     buttons: false,
-                        //     timer: 3000
-                        // });
-
-                        // resetPostTimer(); // Jalankan resetPostTimer
-
-                        postToDatabase();
-
-                    }
-
-                }
-            } catch (error) {
-                console.error('Error parsing JSON data:', error);
-            }
+        if ($('#your_table_id tbody tr').length > 20) {
+            $('#your_table_id tbody tr:last').remove();
         }
+
+      }
+
     };
 
     // Fungsi untuk memposting data ke database

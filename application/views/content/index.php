@@ -19,7 +19,7 @@
      
           <!-- <button type="button" class="btn btn-success" onclick="get_datatables_checked()">Set State</button> -->
 
-          <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#databaseModal">Add</button> -->
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#databaseModal">Add</button>
           <!--<button type="button" class="btn btn-primary" onclick="window.location.reload()">Refresh</button>-->
           <button type="button" class="btn btn-primary" onclick="reload_datatables()">Refresh</button>
 
@@ -163,48 +163,96 @@ table.dataTable {
     size: 5
   });
 
-  function load_dropdown_parameter(id_parameter){
+  function load_dropdown_aset(){
 		
 		//get a reference to the select element
-		var $parameter_id = $('#parameter_id');
-    $("#parameter_id").html('<option value="0">Loading...</option>');
+		var $id_aset = $('#id_aset');
+    $("#id_aset").html('<option value="0">Loading...</option>');
 
-		let hidden_parameter_id = $("#hidden_parameter_id").val();
+		let hidden_id_aset = $("#hidden_id_aset").val();
 
 		$.ajax({
 		method: "POST",
-		url:'<?php echo site_url() . 'content/load_dropdown_parameter'; ?>',
+		url:'<?php echo site_url() . 'content/load_dropdown_aset'; ?>',
 		dataType: 'JSON', 
 		success: function(data){
 
 			if (data.is_data_ada){
 
 				//clear the current content of the select
-				$parameter_id.html('');
-				$parameter_id.append('<option value = "0">- Silahkan Pilih -</option>');
+				$id_aset.html('');
+				$id_aset.append('<option value = "0">- Silahkan Pilih -</option>');
 
 				//iterate over the data and append a select option
 
 				$.each(data.list_data, function (key, val){
 
-					if (hidden_parameter_id == val.id){
-						$parameter_id.append('<option selected="selected" value = "' + val.id_parameter + '">' + val.nama_parameter + '</option>');
+					if (hidden_id_aset == val.id_aset){
+						$id_aset.append('<option selected="selected" value = "' + val.id_aset + '">' + val.nama_aset + '</option>');
 					} else {
-						$parameter_id.append('<option value = "' + val.id_parameter + '">' + val.nama_parameter + '</option>');
+						$id_aset.append('<option value = "' + val.id_aset + '">' + val.nama_aset + '</option>');
 					}
 
 				});
 
-        $parameter_id.val('0');
+        $id_aset.val('0');
 
 			} else {
-				$parameter_id.html('<option value = "0">- Tidak Ada Data -</option>');
+				$id_aset.html('<option value = "0">- Tidak Ada Data -</option>');
 			}
 
 		}, 				
 		error: function(){
 			//if there is an error append a 'none available' option
-			$parameter_id.html('<option value = "0">- Tidak Ada Data -</option>');
+			$id_aset.html('<option value = "0">- Tidak Ada Data -</option>');
+		}
+
+		});
+
+	}
+
+  function load_dropdown_ruangan(id_parameter){
+		
+		//get a reference to the select element
+		var $ruangan_id = $('#ruangan_id');
+    $("#ruangan_id").html('<option value="0">Loading...</option>');
+
+		let hidden_ruangan_id = $("#hidden_ruangan_id").val();
+
+		$.ajax({
+		method: "POST",
+		url:'<?php echo site_url() . 'content/load_dropdown_ruangan'; ?>',
+		dataType: 'JSON', 
+		success: function(data){
+
+			if (data.is_data_ada){
+
+				//clear the current content of the select
+				$ruangan_id.html('');
+				$ruangan_id.append('<option value = "0">- Silahkan Pilih -</option>');
+
+				//iterate over the data and append a select option
+
+				$.each(data.list_data, function (key, val){
+
+					if (hidden_ruangan_id == val.id){
+						$ruangan_id.append('<option selected="selected" value = "' + val.id + '">' + val.ruangan + '</option>');
+					} else {
+						$ruangan_id.append('<option value = "' + val.id + '">' + val.ruangan + '</option>');
+					}
+
+				});
+
+        $ruangan_id.val('0');
+
+			} else {
+				$ruangan_id.html('<option value = "0">- Tidak Ada Data -</option>');
+			}
+
+		}, 				
+		error: function(){
+			//if there is an error append a 'none available' option
+			$ruangan_id.html('<option value = "0">- Tidak Ada Data -</option>');
 		}
 
 		});
@@ -214,11 +262,11 @@ table.dataTable {
   function load_dropdown_parameter_edit(id_parameter){
 		
     //get a reference to the select element
-		var $edit_parameter_id = $('#edit_parameter_id');
-    $("#edit_parameter_id").html('<option value="0">Loading...</option>');
+		var $edit_ruangan_id = $('#edit_ruangan_id');
+    $("#edit_ruangan_id").html('<option value="0">Loading...</option>');
 
-		//let hidden_parameter_id = $("#hidden_parameter_id").val();
-    let hidden_parameter_id = id_parameter;
+		//let hidden_ruangan_id = $("#hidden_ruangan_id").val();
+    let hidden_ruangan_id = id_parameter;
 
 		$.ajax({
 		method: "POST",
@@ -229,29 +277,29 @@ table.dataTable {
 			if (data.is_data_ada){
 
 				//clear the current content of the select
-				$edit_parameter_id.html('');
-				$edit_parameter_id.append('<option value = "0">- Silahkan Pilih -</option>');
+				$edit_ruangan_id.html('');
+				$edit_ruangan_id.append('<option value = "0">- Silahkan Pilih -</option>');
 
 				//iterate over the data and append a select option
 
 				$.each(data.list_data, function (key, val){
 
-					if (hidden_parameter_id == val.id_parameter){
-						$edit_parameter_id.append('<option selected="selected" value = "' + val.id_parameter + '">' + val.nama_parameter + '</option>');
+					if (hidden_ruangan_id == val.id_parameter){
+						$edit_ruangan_id.append('<option selected="selected" value = "' + val.id_parameter + '">' + val.nama_parameter + '</option>');
 					} else {
-						$edit_parameter_id.append('<option value = "' + val.id_parameter + '">' + val.nama_parameter + '</option>');
+						$edit_ruangan_id.append('<option value = "' + val.id_parameter + '">' + val.nama_parameter + '</option>');
 					}
 
 				});
 
 			} else {
-				$edit_parameter_id.html('<option value = "0">- Tidak Ada Data -</option>');
+				$edit_ruangan_id.html('<option value = "0">- Tidak Ada Data -</option>');
 			}
 
 		}, 				
 		error: function(){
 			//if there is an error append a 'none available' option
-			$edit_parameter_id.html('<option value = "0">- Tidak Ada Data -</option>');
+			$edit_ruangan_id.html('<option value = "0">- Tidak Ada Data -</option>');
 		}
 
 		});
@@ -261,11 +309,11 @@ table.dataTable {
   function load_dropdown_parameter_hitapi(id_parameter){
 		
     //get a reference to the select element
-		var $hitapi_parameter_id = $('#hitapi_parameter_id');
-    $("#hitapi_parameter_id").html('<option value="0">Loading...</option>');
+		var $hitapi_ruangan_id = $('#hitapi_ruangan_id');
+    $("#hitapi_ruangan_id").html('<option value="0">Loading...</option>');
 
-		//let hidden_parameter_id = $("#hidden_parameter_id").val();
-    let hidden_parameter_id = id_parameter;
+		//let hidden_ruangan_id = $("#hidden_ruangan_id").val();
+    let hidden_ruangan_id = id_parameter;
 
 		$.ajax({
 		method: "POST",
@@ -276,78 +324,78 @@ table.dataTable {
 			if (data.is_data_ada){
 
 				//clear the current content of the select
-				$hitapi_parameter_id.html('');
-				$hitapi_parameter_id.append('<option value = "0">- Silahkan Pilih -</option>');
+				$hitapi_ruangan_id.html('');
+				$hitapi_ruangan_id.append('<option value = "0">- Silahkan Pilih -</option>');
 
 				//iterate over the data and append a select option
 
 				$.each(data.list_data, function (key, val){
 
-					if (hidden_parameter_id == val.id_parameter){
-						$hitapi_parameter_id.append('<option selected="selected" value = "' + val.id_parameter + '">' + val.nama_parameter + '</option>');
+					if (hidden_ruangan_id == val.id_parameter){
+						$hitapi_ruangan_id.append('<option selected="selected" value = "' + val.id_parameter + '">' + val.nama_parameter + '</option>');
 					} else {
-						$hitapi_parameter_id.append('<option value = "' + val.id_parameter + '">' + val.nama_parameter + '</option>');
+						$hitapi_ruangan_id.append('<option value = "' + val.id_parameter + '">' + val.nama_parameter + '</option>');
 					}
 
 				});
 
 			} else {
-				$hitapi_parameter_id.html('<option value = "0">- Tidak Ada Data -</option>');
+				$hitapi_ruangan_id.html('<option value = "0">- Tidak Ada Data -</option>');
 			}
 
 		}, 				
 		error: function(){
 			//if there is an error append a 'none available' option
-			$hitapi_parameter_id.html('<option value = "0">- Tidak Ada Data -</option>');
+			$hitapi_ruangan_id.html('<option value = "0">- Tidak Ada Data -</option>');
 		}
 
 		});
 
 	}
 
-  function load_dropdown_variable(id_parameter){
+  function load_dropdown_reader(id_ruangan){
 		
 		//get a reference to the select element
-		var $variable_id = $('#variable_id');
-    $("#variable_id").html('<option value="0">Loading...</option>');
+		var $reader_id = $('#reader_id');
+    $("#reader_id").html('<option value="0">Loading...</option>');
 
-		let hidden_variable_id = $("#hidden_variable_id").val();
+		let hidden_reader_id = $("#hidden_reader_id").val();
 
 		$.ajax({
 		method: "POST",
-		url:'<?php echo site_url() . 'content/load_dropdown_variable'; ?>',
+		url:'<?php echo site_url() . 'content/load_dropdown_reader'; ?>',
 		dataType: 'JSON', 
-		data: {id_parameter: id_parameter},	
+		data: {id_ruangan: id_ruangan},	
 		success: function(data){
 
 			if (data.is_data_ada){
 
 				//clear the current content of the select
-				$variable_id.html('');
-				$variable_id.append('<option value = "0">- Silahkan Pilih -</option>');
+				$reader_id.html('');
+				$reader_id.append('<option value = "0">- Silahkan Pilih -</option>');
 
 				//iterate over the data and append a select option
 
 				$.each(data.list_data, function (key, val){
 
-					if (hidden_variable_id == val.id){
-						$variable_id.append('<option selected="selected" value = "' + val.id_variable + '">' + val.nama_variable + '</option>');
+					if (hidden_reader_id == val.id){
+						$reader_id.append('<option selected="selected" value = "' + val.reader_id + '">' + val.reader_name + '</option>');
 					} else {
-						$variable_id.append('<option value = "' + val.id_variable + '">' + val.nama_variable + '</option>');
+						$reader_id.append('<option value = "' + val.reader_id + '">' + val.reader_name + '</option>');
 					}
 
 				});
 
-        $variable_id.val('0');
+        $reader_id.val('0');
 
 			} else {
-				$variable_id.html('<option value = "0">- Tidak Ada Data -</option>');
+				$reader_id.html('<option value = "0">- Tidak Ada Data -</option>');
 			}
 
 		}, 				
 		error: function(){
 			//if there is an error append a 'none available' option
-			$variable_id.html('<option value = "0">- Tidak Ada Data -</option>');
+			$reader_id.html('<option value = "0">- Tidak Ada Data -</option>');
 		}
 
 		});
@@ -357,10 +405,10 @@ table.dataTable {
   function load_dropdown_variable_edit(id_parameter, id_variable_old){
 		
 		//get a reference to the select element
-		var $variable_id = $('#edit_variable_id');
-    $("#edit_variable_id").html('<option value="0">Loading...</option>');
+		var $reader_id = $('#edit_reader_id');
+    $("#edit_reader_id").html('<option value="0">Loading...</option>');
 
-		let hidden_variable_id = id_variable_old;
+		let hidden_reader_id = id_variable_old;
 
 		$.ajax({
 		method: "POST",
@@ -372,29 +420,29 @@ table.dataTable {
 			if (data.is_data_ada){
 
 				//clear the current content of the select
-				$variable_id.html('');
-				$variable_id.append('<option value = "0">- Silahkan Pilih -</option>');
+				$reader_id.html('');
+				$reader_id.append('<option value = "0">- Silahkan Pilih -</option>');
 
 				//iterate over the data and append a select option
 
 				$.each(data.list_data, function (key, val){
 
-					if (hidden_variable_id == val.id_variable){
-						$variable_id.append('<option selected="selected" value = "' + val.id_variable + '">' + val.nama_variable + '</option>');
+					if (hidden_reader_id == val.id_variable){
+						$reader_id.append('<option selected="selected" value = "' + val.id_variable + '">' + val.nama_variable + '</option>');
 					} else {
-						$variable_id.append('<option value = "' + val.id_variable + '">' + val.nama_variable + '</option>');
+						$reader_id.append('<option value = "' + val.id_variable + '">' + val.nama_variable + '</option>');
 					}
 
 				});
 
 			} else {
-				$variable_id.html('<option value = "0">- Tidak Ada Data -</option>');
+				$reader_id.html('<option value = "0">- Tidak Ada Data -</option>');
 			}
 
 		}, 				
 		error: function(){
 			//if there is an error append a 'none available' option
-			$variable_id.html('<option value = "0">- Tidak Ada Data -</option>');
+			$reader_id.html('<option value = "0">- Tidak Ada Data -</option>');
 		}
 
 		});
@@ -404,10 +452,10 @@ table.dataTable {
   function load_dropdown_variable_hitapi(id_parameter, id_variable_old){
 		
 		//get a reference to the select element
-		var $variable_id = $('#hitapi_variable_id');
-    $("#hitapi_variable_id").html('<option value="0">Loading...</option>');
+		var $reader_id = $('#hitapi_reader_id');
+    $("#hitapi_reader_id").html('<option value="0">Loading...</option>');
 
-		let hidden_variable_id = id_variable_old;
+		let hidden_reader_id = id_variable_old;
 
 		$.ajax({
 		method: "POST",
@@ -419,29 +467,29 @@ table.dataTable {
 			if (data.is_data_ada){
 
 				//clear the current content of the select
-				$variable_id.html('');
-				$variable_id.append('<option value = "0">- Silahkan Pilih -</option>');
+				$reader_id.html('');
+				$reader_id.append('<option value = "0">- Silahkan Pilih -</option>');
 
 				//iterate over the data and append a select option
 
 				$.each(data.list_data, function (key, val){
 
-					if (hidden_variable_id == val.id_variable){
-						$variable_id.append('<option selected="selected" value = "' + val.id_variable + '">' + val.nama_variable + '</option>');
+					if (hidden_reader_id == val.id_variable){
+						$reader_id.append('<option selected="selected" value = "' + val.id_variable + '">' + val.nama_variable + '</option>');
 					} else {
-						$variable_id.append('<option value = "' + val.id_variable + '">' + val.nama_variable + '</option>');
+						$reader_id.append('<option value = "' + val.id_variable + '">' + val.nama_variable + '</option>');
 					}
 
 				});
 
 			} else {
-				$variable_id.html('<option value = "0">- Tidak Ada Data -</option>');
+				$reader_id.html('<option value = "0">- Tidak Ada Data -</option>');
 			}
 
 		}, 				
 		error: function(){
 			//if there is an error append a 'none available' option
-			$variable_id.html('<option value = "0">- Tidak Ada Data -</option>');
+			$reader_id.html('<option value = "0">- Tidak Ada Data -</option>');
 		}
 
 		});
@@ -451,10 +499,10 @@ table.dataTable {
   function load_dropdown_sound(id_sound){
 		
 		//get a reference to the select element
-		var $parameter_id = $('#edit_sound_id');
+		var $ruangan_id = $('#edit_sound_id');
     $("#edit_sound_id").html('<option value="0">Loading...</option>');
 
-		let hidden_parameter_id = id_sound;
+		let hidden_ruangan_id = id_sound;
 
 		$.ajax({
 		method: "POST",
@@ -465,29 +513,29 @@ table.dataTable {
 			if (data.is_data_ada){
 
 				//clear the current content of the select
-				$parameter_id.html('');
-				$parameter_id.append('<option value = "0">- Silahkan Pilih -</option>');
+				$ruangan_id.html('');
+				$ruangan_id.append('<option value = "0">- Silahkan Pilih -</option>');
 
 				//iterate over the data and append a select option
 
 				$.each(data.list_data, function (key, val){
 
-					if (hidden_parameter_id == val.id_sound){
-						$parameter_id.append('<option selected="selected" value = "' + val.id_sound + '">' + val.nama_sound + '</option>');
+					if (hidden_ruangan_id == val.id_sound){
+						$ruangan_id.append('<option selected="selected" value = "' + val.id_sound + '">' + val.nama_sound + '</option>');
 					} else {
-						$parameter_id.append('<option value = "' + val.id_sound + '">' + val.nama_sound + '</option>');
+						$ruangan_id.append('<option value = "' + val.id_sound + '">' + val.nama_sound + '</option>');
 					}
 
 				});
 
 			} else {
-				$parameter_id.html('<option value = "0">- Tidak Ada Data -</option>');
+				$ruangan_id.html('<option value = "0">- Tidak Ada Data -</option>');
 			}
 
 		}, 				
 		error: function(){
 			//if there is an error append a 'none available' option
-			$parameter_id.html('<option value = "0">- Tidak Ada Data -</option>');
+			$ruangan_id.html('<option value = "0">- Tidak Ada Data -</option>');
 		}
 
 		});
@@ -497,7 +545,7 @@ table.dataTable {
   function load_dropdown_sound_add(){
 		
 		//get a reference to the select element
-		var $parameter_id = $('#sound_id');
+		var $ruangan_id = $('#sound_id');
     $("#sound_id").html('<option value="0">Loading...</option>');
 
 		$.ajax({
@@ -509,25 +557,25 @@ table.dataTable {
 			if (data.is_data_ada){
 
 				//clear the current content of the select
-				$parameter_id.html('');
-				$parameter_id.append('<option value = "0">- Silahkan Pilih -</option>');
+				$ruangan_id.html('');
+				$ruangan_id.append('<option value = "0">- Silahkan Pilih -</option>');
 
 				//iterate over the data and append a select option
 
 				$.each(data.list_data, function (key, val){
-					$parameter_id.append('<option value = "' + val.id_sound + '">' + val.nama_sound + '</option>');
+					$ruangan_id.append('<option value = "' + val.id_sound + '">' + val.nama_sound + '</option>');
 				});
 
         $('#sound_id').val('0').change();
 
 			} else {
-				$parameter_id.html('<option value = "0">- Tidak Ada Data -</option>');
+				$ruangan_id.html('<option value = "0">- Tidak Ada Data -</option>');
 			}
 
 		}, 				
 		error: function(){
 			//if there is an error append a 'none available' option
-			$parameter_id.html('<option value = "0">- Tidak Ada Data -</option>');
+			$ruangan_id.html('<option value = "0">- Tidak Ada Data -</option>');
 		}
 
 		});
@@ -658,7 +706,8 @@ table.dataTable {
 <script>
 $(document).ready(function() {
 
-  load_dropdown_parameter();
+  load_dropdown_ruangan();
+  load_dropdown_aset();
   load_dropdown_sound_add();
 
   $('#filter_id_parameter').on('change', function(){
@@ -673,76 +722,38 @@ $(document).ready(function() {
 
   });
 
-  /*
-  $('#sound3')[0].play();
+  $('#ruangan_id').change(function(){
 
-  // Wait for sound1 to finish, then play sound2
-  $('#sound3').on('ended', function() {
-    $('#sound2')[0].play();
-  });
-  */
+    let ruangan_id = $(this).val();
 
-  /*
-  var audioArray = document.getElementsByClassName('songs');
-  var i = 0;
-  audioArray[i].play();
-  for (i = 0; i < audioArray.length - 1; ++i) {
-      audioArray[i].addEventListener('ended', function(e){
-          var currentSong = e.target;
-          var next = $(currentSong).nextAll('audio');
-          if (next.length) $(next[0]).trigger('play');
-      });
-  }
-  */
-
-  $('#parameter_id').change(function(){
-
-    let id_parameter = $(this).val();
-
-    $.getJSON("<?php echo site_url(); ?>content/getParameterById/" + id_parameter, function(response) {
+    $.getJSON("<?php echo site_url(); ?>content/getRuanganById/" + ruangan_id, function(response) {
       console.log(response);
-      $('#total_qty_parameter').val(response.total_qty_parameter);
+      $('#room_name').val(response.ruangan);
     });
 
   });
 
-  $('#sound_id').change(function(){
+  $('#reader_id').change(function(){
 
-    let id_sound = $(this).val();
+    let reader_id = $(this).val();
 
-    $.getJSON("<?php echo site_url(); ?>content/getSoundById/" + id_sound, function(response) {
-        
-      // code to handle the JSON data
-      // Parse the JSON response here
-      //var responseData = JSON.parse(response);
+    $.getJSON("<?php echo site_url(); ?>content/getReaderById/" + reader_id, function(response) {
       console.log(response);
-      //alert(response.is_tts);
-                
-      // Access the data from the response
-      $('#is_tts').val(response.is_tts);
-      $('#text_to_speech_active').val(response.text_tts);
-      $('#html_id').val(response.html_id);
-
+      $('#reader_antena').val(response.reader_antena);
+      $('#reader_angle').val(response.reader_angle);
+      $('#reader_gate').val(response.reader_gate);
+      // $('#tipe_moving').val(response.tipe_moving);
     });
 
   });
 
-  $('#edit_sound_id').change(function(){
+  $('#id_aset').change(function(){
 
-    let id_sound = $(this).val();
+    let id_aset = $(this).val();
 
-    $.getJSON("<?php echo site_url(); ?>content/getSoundById/" + id_sound, function(response) {
-        
-      // code to handle the JSON data
-        // Parse the JSON response here
-        //var responseData = JSON.parse(response);
-        console.log(response);
-                
-        // Access the data from the response
-        $('#edit_is_tts').val(response.is_tts);
-        $('#edit_text_to_speech_active').val(response.text_tts);
-        $('#edit_html_id').val(response.html_id);
-
+    $.getJSON("<?php echo site_url(); ?>content/getAsetById/" + id_aset, function(response) {
+      console.log(response);
+      $('#rfid_tag_number').val(response.rfid_tag_number);
     });
 
   });
@@ -753,25 +764,15 @@ $(document).ready(function() {
 
   // add data
 
-  $('#is_parameter_active').change(function(){
+  $('#tipe_moving').change(function(){
 
     if (!this.checked) {
         // Code to execute when the checkbox is unchecked
         //alert('tidak ajib');
-        $('#light_active').prop('checked', false);
-        $('#sound_active').prop('checked', false);
-        $('#light_proactive').prop('checked', false);
-        $('#sound_proactive').prop('checked', false);
-        $('#is_light_strobe_active').prop('checked', false);
-        $('#label_is_parameter_active').html('Not Active');
+        $('#label_tipe_moving').html('Illegal');
     } else {
         //alert('ajib');
-        $('#light_active').prop('checked', true);
-        $('#sound_active').prop('checked', true);
-        $('#light_proactive').prop('checked', true);
-        $('#sound_proactive').prop('checked', true);
-        $('#is_light_strobe_active').prop('checked', true);
-        $('#label_is_parameter_active').html('Active');
+        $('#label_tipe_moving').html('Legal');
     }
 
   });
@@ -846,76 +847,141 @@ $(document).ready(function() {
 
   });
 
-  $('#edit_is_parameter_active').change(function(){
-
-      if (!this.checked) {
-          // Code to execute when the checkbox is unchecked
-          //alert('tidak ajib');
-          $('#edit_light_active').prop('checked', false);
-          $('#edit_sound_active').prop('checked', false);
-          $('#edit_light_proactive').prop('checked', false);
-          $('#edit_sound_proactive').prop('checked', false);
-          $('#edit_is_light_strobe_active').prop('checked', false);
-          $('#label_edit_is_parameter_active').html('Not Active');
-      } else {
-          //alert('ajib');
-          $('#edit_light_active').prop('checked', true);
-          $('#edit_sound_active').prop('checked', true);
-          $('#edit_light_proactive').prop('checked', true);
-          $('#edit_sound_proactive').prop('checked', true);
-          $('#edit_is_light_strobe_active').prop('checked', true);
-          $('#label_edit_is_parameter_active').html('Active');
-      }
-
-  });
-
-  $('#parameter_id').on('change', function(){
-		load_dropdown_variable(this.value);
+  $('#ruangan_id').on('change', function(){
+		load_dropdown_reader(this.value);
 	});
 
-  let variable_id = $('#variable_id').val();
+  let reader_id = $('#reader_id').val();
 
-	//if (variable_id != ''){
-		//load_dropdown_variable(variable_id);
+	//if (reader_id != ''){
+		//load_dropdown_variable(reader_id);
 	//}
 
   // { "data": null, "defaultContent": '<input type="checkbox" class="checkbox">' }, // Checkbox column
 
     $('#contentTable').DataTable({
-        "processing": true,
-        "serverSide": true,
-        "ajax": {
-            url: "<?php echo site_url(); ?>content/serverSideData",
-            type: "POST",
-            data: function (d) {
-                d.filter_id_parameter = $('#filter_id_parameter').val();
-            }
+      "processing": true,
+      "serverSide": true,
+      "ajax": {
+          url: "<?php echo site_url(); ?>content/serverSideData",
+          type: "POST",
+          data: function (d) {
+              d.filter_id_parameter = $('#filter_id_parameter').val();
+          }
+      },
+      "order": [[1, 'desc']],
+      columns: [
+          { data: "No", className: "dt-center" },
+          { data: "ID Content", className: "dt-center" },
+          { data: "lokasi_sebelumnya", className: "dt-center" },
+          { data: "Ruangan", className: "dt-center" },
+          { data: "reader_gate", className: "dt-center" },
+          { data: "reader_angle", className: "dt-center" },
+          { data: "waktu", className: "dt-center" },
+          { data: "rfid_tag_number", className: "dt-center" },
+          { data: "Kode Brg", className: "dt-center" },
+          { data: "NUP", className: "dt-center" },
+          { data: "Nama Brg", className: "dt-left" },
+          // { data: "kategori_pergerakan", className: "dt-center" },
+          // { data: "is_legal_moving", className: "dt-center" },
+          // { data: "keterangan_pergerakan", className: "dt-center" },
+          // { data: "Action", className: "dt-center", orderable: false, searchable: false, render: function (data, type, row) {
+          //     return '<i class="ui-tooltip fa fa-pencil-square-o" title="Edit" style="font-size: 22px;color:#2222aa; cursor:pointer;" data-original-title="Edit" onclick="editData(' + row.id_temp_table + ')"></i>&nbsp;<i class="ui-tooltip fa fa-trash-o" title="Hapus" style="font-size: 22px;color:#aa2222; cursor:pointer;" data-original-title="Hapus" onclick="deleteContent(' + row.id_temp_table + ')"></i>';
+          // } },
+      ]
+    });
+
+    var selectedItems = [];
+
+    $('#dataTableModal').DataTable({
+      "processing": true,
+      "serverSide": true,
+      "ajax": {
+        "url": "<?php echo site_url(); ?>content/serverSideDataAset",
+        "type": "POST"
+      },
+      "columns": [
+        // { "data": "no", "orderable": false, "render": function (data, type, row, meta) {
+        //     return '<input type="checkbox" class="cekbok" value="'+data+'" />';
+        //   } 
+        // },
+        { 
+          data: "id_aset",
+          render: function(data, type, row) {
+              return `<input type="checkbox" class="row-check" value="${data}">`;
+          },
+          orderable: false
         },
-        "order": [[1, 'desc']],
-        columns: [
-            { data: "No", className: "dt-center" },
-            { data: "ID Content", className: "dt-center" },
-            { data: "lokasi_sebelumnya", className: "dt-center" },
-            { data: "Ruangan", className: "dt-center" },
-            { data: "reader_gate", className: "dt-center" },
-            { data: "reader_angle", className: "dt-center" },
-            { data: "waktu", className: "dt-center" },
-            { data: "Kode Brg", className: "dt-center" },
-            { data: "NUP", className: "dt-center" },
-            { data: "Nama Brg", className: "dt-left" },
-            { data: "kategori_pergerakan", className: "dt-center" },
-            { data: "is_legal_moving", className: "dt-center" },
-            { data: "keterangan_pergerakan", className: "dt-center" },
-            // { data: "Action", className: "dt-center", orderable: false, searchable: false, render: function (data, type, row) {
-            //     return '<i class="ui-tooltip fa fa-pencil-square-o" title="Edit" style="font-size: 22px;color:#2222aa; cursor:pointer;" data-original-title="Edit" onclick="editData(' + row.id_temp_table + ')"></i>&nbsp;<i class="ui-tooltip fa fa-trash-o" title="Hapus" style="font-size: 22px;color:#aa2222; cursor:pointer;" data-original-title="Hapus" onclick="deleteContent(' + row.id_temp_table + ')"></i>';
-            // } },
-        ]
+
+        { "data": "nama_aset" },
+        { "data": "kode_tid" }
+      ],
+      "order": [[ 1, "asc" ]],
+      "fnDrawCallback": function( oSettings ) {
+        uncheck_all();
+      }
     });
 
     $('#checkall').change(function(){
       var cells = $('#contentTable').find('tbody > tr > td:nth-child(2)');
       $(cells).find(':checkbox').prop('checked', $(this).is(':checked'));
     });
+
+    $('#databaseModal').on('shown.bs.modal', function () {
+
+        if (!$.fn.DataTable.isDataTable('#dataTable2')) {
+
+          $('#dataTableModal').DataTable({
+            "retrieve": true,
+            "destroy": true,
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+              "url": "<?php echo site_url(); ?>content/serverSideDataAset",
+              "type": "POST"
+            },
+            "columns": [
+              { "data": "no", "orderable": false, "render": function (data, type, row, meta) {
+                return '<input type="checkbox" class="cekbok" value="'+data+'" />';
+              } },
+              { "data": "nama_aset" },
+              { "data": "kode_tid" }
+            ],
+            "order": [[ 1, "asc" ]],
+            "fnDrawCallback": function( oSettings ) {
+              uncheck_all();
+            }
+          });
+
+        }
+
+    });
+
+    // Select All Checkbox
+    $('#select_all').on('click', function() {
+        var checked = this.checked;
+        $('.row-check').each(function() {
+            this.checked = checked;
+            updateSelectedItems(this.value, checked);
+        });
+    });
+
+    // Per Row Checkbox
+    $('#dataTableModal tbody').on('change', '.row-check', function() {
+        updateSelectedItems(this.value, this.checked);
+    });
+
+    // Function untuk update selectedItems
+    function updateSelectedItems(id, checked) {
+        if (checked) {
+            if (!selectedItems.includes(id)) {
+                selectedItems.push(id);
+            }
+        } else {
+            selectedItems = selectedItems.filter(item => item !== id);
+        }
+        console.log(selectedItems); // Debugging, cek daftar ID yang dipilih
+    }
 
 });
 
@@ -942,18 +1008,18 @@ function editData(id) {
 
             $('#hidden_id_content').val(responseData.data.id_content);
           
-            $('#edit_parameter_id').val(responseData.data.parameter_id);
-            $('#edit_variable_id').val(responseData.data.variable_id);
-            $('#old_variable_id').val(responseData.data.variable_id);
+            $('#edit_ruangan_id').val(responseData.data.ruangan_id);
+            $('#edit_reader_id').val(responseData.data.reader_id);
+            $('#old_reader_id').val(responseData.data.reader_id);
 
             $('#edit_total_qty_parameter').val(responseData.data.total_qty_parameter);
 
-            if (responseData.data.is_parameter_active == 0) {
-                $('#edit_is_parameter_active').prop('checked', false);
-                $('#label_edit_is_parameter_active').html('Not Active');
-            } else if (responseData.data.is_parameter_active == 1) {
-                $('#edit_is_parameter_active').prop('checked', true);
-                $('#label_edit_is_parameter_active').html('Active');
+            if (responseData.data.tipe_moving == 0) {
+                $('#edit_tipe_moving').prop('checked', false);
+                $('#label_edit_tipe_moving').html('Not Active');
+            } else if (responseData.data.tipe_moving == 1) {
+                $('#edit_tipe_moving').prop('checked', true);
+                $('#label_edit_tipe_moving').html('Active');
             }
 
             $('#edit_is_reverse_threshold').val(responseData.data.is_reverse_threshold);
@@ -993,8 +1059,8 @@ function editData(id) {
 
             // $('#edit_is_threshold_confirm').prop('checked', responseData.data.is_threshold_confirm == 1);
 
-            load_dropdown_parameter_edit(responseData.data.parameter_id);
-            load_dropdown_variable_edit(responseData.data.parameter_id, responseData.data.variable_id);
+            load_dropdown_parameter_edit(responseData.data.ruangan_id);
+            load_dropdown_variable_edit(responseData.data.ruangan_id, responseData.data.reader_id);
 
             // load_dropdown_sound(responseData.data.id_sound);
             // $('edit_light_color_code').val(responseData.data.light_color_code);
@@ -1033,11 +1099,11 @@ function hitApi(id) {
 
           $('#hitapi_hidden_id_content').val(responseData.data.id_content);
           
-          $('#hitapi_parameter_id').val(responseData.data.parameter_id);
-          $('#hitapi_variable_id').val(responseData.data.variable_id);
+          $('#hitapi_ruangan_id').val(responseData.data.ruangan_id);
+          $('#hitapi_reader_id').val(responseData.data.reader_id);
 
-          load_dropdown_parameter_hitapi(responseData.data.parameter_id);
-          load_dropdown_variable_hitapi(responseData.data.parameter_id, responseData.data.variable_id);
+          load_dropdown_parameter_hitapi(responseData.data.ruangan_id);
+          load_dropdown_variable_hitapi(responseData.data.ruangan_id, responseData.data.reader_id);
 
           $('#hitapi_state').val(parseFloat(responseData.data.state));
 
@@ -1088,19 +1154,35 @@ function store() {
   }
   */
 
-  let parameter_id = $('#parameter_id').val();
+  let ruangan_id = $('#ruangan_id').val();
 
-  if (parameter_id == '0') {
-    alert('Kategori harus diisi');
-    parameter_id.focus();
+  if (ruangan_id == '0') {
+    alert('Ruangan harus diisi');
+    ruangan_id.focus();
     return false;
   }
 
-  let variable_id = $('#variable_id').val();
+  let reader_id = $('#reader_id').val();
 
-  if (variable_id == '0') {
-    alert('Variabel harus diisi');
-    variable_id.focus();
+  if (reader_id == '0') {
+    alert('Reader harus diisi');
+    reader_id.focus();
+    return false;
+  }
+
+  let reader_angle = $('#reader_angle').val();
+
+  if (reader_angle == '0') {
+    alert('Reader angle harus diisi');
+    reader_angle.focus();
+    return false;
+  }
+
+  let id_aset = $('#id_aset').val();
+
+  if (id_aset == '0') {
+    alert('Aset harus diisi');
+    id_aset.focus();
     return false;
   }
 
@@ -1138,12 +1220,12 @@ function update() {
 
   // Add your button click logic here,
 
-  if ($('#edit_parameter_id').val() == '0'){
+  if ($('#edit_ruangan_id').val() == '0'){
     alert('Parameter harus dipilih');
     return false;
   }
 
-  if ($('#edit_variable_id').val() == '0'){
+  if ($('#edit_reader_id').val() == '0'){
     alert('Variable harus dipilih');
     return false;
   }
@@ -1198,12 +1280,12 @@ function updateHitApi(){
 
   // Add your button click logic here
 
-  if ($('#edit_parameter_id').val() == '0'){
+  if ($('#edit_ruangan_id').val() == '0'){
     alert('Parameter harus dipilih');
     return false;
   }
 
-  if ($('#edit_variable_id').val() == '0'){
+  if ($('#edit_reader_id').val() == '0'){
     alert('Variable harus dipilih');
     return false;
   }
@@ -1284,12 +1366,13 @@ function playSoundAdd() {
               <th style="text-align: center;">Gate</th>
               <th style="text-align: center;">Angle</th>
               <th style="text-align: center;">Waktu</th>
+              <th style="text-align: center;">Kode TID</th>
               <th style="text-align: center;">Kode Barang</th>
               <th style="text-align: center;">NUP</th>
               <th style="text-align: center;">Nama Barang</th>
-              <th style="text-align: center;">Kategori Moving</th>
+              <!-- <th style="text-align: center;">Kategori Moving</th>
               <th style="text-align: center;">Tipe Moving</th>
-              <th style="text-align: center;">Keterangan Moving</th>
+              <th style="text-align: center;">Keterangan Moving</th> -->
               <!-- <th>Action</th> -->
             </tr>
 
@@ -1312,7 +1395,7 @@ function playSoundAdd() {
   <script src="https://code.responsivevoice.org/responsivevoice.js?key=jQZ2zcdq"></script>
 
   <!-- Modal for Edit Form -->
-  <div class="modal fade" id="databaseModal" tabindex="-1" role="dialog" aria-labelledby="databaseModalLabel" aria-hidden="true">
+  <div class="modal fade" id="databaseModal" tabindex="-1" role="dialog" aria-labelledby="databaseModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 
@@ -1321,136 +1404,90 @@ function playSoundAdd() {
               </div>
 
                 <div class="modal-body">
-                    <form name="form_database" id="form_database" method="post" enctype="multipart/form-data">
-
-                        <div class="form-group">
-                            <label for="parameter_id">Kategori</label>
-                            <select class="form-control" id="parameter_id" name="parameter_id">
-                                <!-- Add your select options here -->
-                            </select>
-                        </div>
-
-                        <!--<div class="form-group">
-                            <label for="left_string_tts">Left String Text To Speech</label>
-                              <input type="text" class="form-control" id="left_string_tts" name="left_string_tts">
-                        </div>-->
-
-                        <input type="hidden" class="form-control" id="left_string_tts" name="left_string_tts" value="">
-
-                        <div class="form-group">
-                            <label for="variable_id">Variable</label>
-                            <select class="form-control" id="variable_id" name="variable_id">
-                                <!-- Add your select options here -->
-                            </select>
-                        </div>
-
-                        <!--<div class="form-group">
-                            <label for="right_string_tts">Right String Text To Speech</label>
-                              <input type="text" class="form-control" id="right_string_tts" name="right_string_tts">
-                        </div>-->
-
-                        <input type="hidden" class="form-control" id="right_string_tts" name="right_string_tts" value="">
-
-                        <!--<div class="form-group">
-                            <label for="relation_key">Relation Key</label>
-                              <input type="text" class="form-control" id="relation_key" name="relation_key">
-                        </div>-->
-
-                        <div class="form-group">
-                            <label for="free_text_tts">Free Text, Text To Speech</label>
-                              <input type="text" class="form-control" id="free_text_tts" name="free_text_tts" value="">
-                        </div>
-                        
-                        <input type="hidden" class="form-control" id="relation_key" name="relation_key" value="">
-
-                        <input type="hidden" class="form-control" id="total_qty_parameter" name="total_qty_parameter">
-
-                        <div class="form-group">
-                            <label for="is_parameter_active">Status</label>
-                            <div class="custom-control custom-switch">
-                              <input type="checkbox" class="custom-control-input" id="is_parameter_active" name="is_parameter_active" value="1" onchange="this.value = this.checked ? 1 : 0">
-                              <label class="custom-control-label" for="is_parameter_active" id="label_is_parameter_active"></label>
-                            </div>
-                        </div>
-
-                        <!-- <div class="form-group">
-                            <label for="is_reverse_threshold">Mode Threshold</label>
-
-                              <select class="form-control" id="is_reverse_threshold" name="is_reverse_threshold">
-                                <option value="x" selected>- Mode Threshold -</option>
-                                <option value="0">Normal</option>
-                                <option value="1">Reverse</option>
-                              </select>
-                              
-                        </div>
-
-                        <div class="form-group">
-                            <label for="is_data_passive">Integrasi Data</label>
-
-                              <select class="form-control" id="is_data_passive" name="is_data_passive">
-                                <option value="x" selected>- Integrasi Data -</option>
-                                <option value="0">Aktif</option>
-                                <option value="1">Pasif</option>
-                              </select>
-                              
-                        </div> -->
-
-                        <input type="hidden" class="form-control" id="state" name="state" value="0">
-
-                        <!-- <h2>Parameter Set</h2>
-                        <hr>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <form name="form_database" id="form_database" method="post" enctype="multipart/form-data">
 
                           <div class="form-group">
-                              <label for="threshold_state_qty_active">Trigger by</label>
-                              <div class="input-group">
-                                <input type="text" class="form-control" id="threshold_state_qty_active" name="threshold_state_qty_active">
-                                <span class="input-group-addon">Count</span>
-                                <span style="display: table-cell; width: 2%; text-align: center; vertical-align : middle; padding-left:20px; padding-right:20px;">OR</span>
-                                <input type="text" class="form-control" id="threshold_state_persentase_active" name="threshold_state_persentase_active">
-                                <span class="input-group-addon">%</span>
-                              </div>
+                              <label for="ruangan_id">Ruangan</label>
+                              <select class="form-control" id="ruangan_id" name="ruangan_id">
+                                  <!-- Add your select options here -->
+                              </select>
+                              <input type="hidden" class="form-control" id="room_name" name="room_name" value="">
                           </div>
 
-                        <h2>Alert Action</h2>
-                        <hr>
+                          <div class="form-group">
+                              <label for="reader_id">Reader</label>
+                              <select class="form-control" id="reader_id" name="reader_id">
+                                  <!-- Add your select options here -->
+                              </select>
+                              <input type="hidden" class="form-control" id="reader_antena" name="reader_antena" value="">
+                              <input type="hidden" class="form-control" id="reader_angle" name="reader_angle" value="">
+                              <input type="hidden" class="form-control" id="reader_gate" name="reader_gate" value="">
+                          </div>
+
+                          <div class="form-group">
+                              <label for="reader_angle">Reader Angle</label>
+                              <select class="form-control" id="reader_angle" name="reader_angle">
+                                <!-- Add your select options here -->
+                                <option value="0" selected>- Silahkan Pilih -</option>
+                                <option value="in">In</option>
+                                <option value="out">Out</option>
+                              </select>
+                          </div>
+
+                          <div class="form-group">
+                              <label for="free_text_tts">Nama Aset</label>
+                              <select class="form-control" id="id_aset" name="id_aset">
+                                  <!-- Add your select options here -->
+                              </select>
+                          </div>
                           
+                          <input type="hidden" class="form-control" id="rfid_tag_number" name="rfid_tag_number" value="">
+
                           <div class="form-group">
-                              <label for="light_active">Light Action</label>
+                              <label for="tipe_moving">Status</label>
                               <div class="custom-control custom-switch">
-                                <input hidden type="checkbox" class="custom-control-input" id="light_active" name="light_active" value="1" onchange="this.value = this.checked ? 1 : 0">
-                                <input type="color" id="html5colorpickeradd" onchange="clickColorAdd()" value="#ff0000" style="width:50%;">
-                                <input type="hidden" name="light_color_code" id="light_color_code" value="">
+                                <input type="checkbox" class="custom-control-input" id="tipe_moving" name="tipe_moving" value="1" onchange="this.value = this.checked ? 1 : 0">
+                                <label class="custom-control-label" for="tipe_moving" id="label_tipe_moving"></label>
                               </div>
-                          </div>
+                          </div>                        
 
-                          <div class="form-group">
-                              <label for="sound_active">Sound</label>
-                              <select class="form-control" id="sound_id" name="sound_id">
-                              </select>
-                              <input type="hidden" name="is_tts" id="is_tts" value="0">
-                              <input type="hidden" name="html_id" id="html_id" value="">
-                              <br>
-                              <input hidden type="checkbox" class="custom-control-input" id="sound_active" name="sound_active" value="1" onchange="this.value = this.checked ? 1 : 0">
-                              <input type="hidden" class="form-control" id="text_to_speech_active" name="text_to_speech_active" value="">
-                              <div style="text-align: right;">
-                              <button type="button" class="btn btn-primary" onclick="playSoundAdd()">Play</button>
-                              </div>
-                          </div> -->
+                      </form>
 
-                          <input type="hidden" class="form-control" id="threshold_state_qty_proactive" name="threshold_state_qty_proactive">
-                          <input type="hidden" class="form-control" id="threshold_state_persentase_proactive" name="threshold_state_persentase_proactive">
-                          <input type="hidden" class="form-control" id="interval" name="interval" value="0">
+                    </div>
+                  </div>
 
-                          <input hidden type="checkbox" class="custom-control-input" id="light_proactive" name="light_proactive" value="1" onchange="this.value = this.checked ? 1 : 0">
-                          <input hidden type="checkbox" class="custom-control-input" id="sound_proactive" name="sound_proactive" value="1" onchange="this.value = this.checked ? 1 : 0">
-                          <input hidden type="checkbox" class="custom-control-input" id="is_light_strobe_active" name="is_light_strobe_active" value="1" onchange="this.value = this.checked ? 1 : 0">
+                  <div class="row">
+                    <div class="col-md-12">
+                  
+                        <!-- DataTables Table -->
 
-                    </form>
+                        <div class="table-responsive">
+                            <table id="dataTableModal" class="display table table-striped table-bordered" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="select_all"></th>
+                                        <th>Nama</th>
+                                        <th>RFID Tag Number</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    
+                    </div>
+                  </div>
+
                 </div>
+                
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button onclick="store()" type="button" class="btn btn-primary" id="saveDatabase">Save</button>
                 </div>
+
             </div>
         </div>
     </div>
@@ -1468,12 +1505,12 @@ function playSoundAdd() {
                     <form name="form_edit" id="form_edit" action="<?php echo site_url().'content/update'?>" method="post" enctype="multipart/form-data">
 
                         <div class="form-group">
-                            <label for="edit_parameter_id">Kategori</label>
-                            <select class="form-control" id="edit_parameter_id" name="edit_parameter_id">
+                            <label for="edit_ruangan_id">Kategori</label>
+                            <select class="form-control" id="edit_ruangan_id" name="edit_ruangan_id">
                                 <!-- Add your select options here -->
                             </select>
                             <input type="hidden" name="hidden_id_content" id="hidden_id_content" value="">
-                            <input type="hidden" name="hidden_edit_parameter_id" id="hidden_edit_parameter_id" value="">
+                            <input type="hidden" name="hidden_edit_ruangan_id" id="hidden_edit_ruangan_id" value="">
                         </div>
 
                         <!--<div class="form-group">
@@ -1484,8 +1521,8 @@ function playSoundAdd() {
                         <input type="hidden" class="form-control" id="edit_left_string_tts" name="edit_left_string_tts" value="">
 
                         <div class="form-group">
-                            <label for="edit_variable_id">Variable</label>
-                            <select class="form-control" id="edit_variable_id" name="edit_variable_id">
+                            <label for="edit_reader_id">Variable</label>
+                            <select class="form-control" id="edit_reader_id" name="edit_reader_id">
                                 <!-- Add your select options here -->
                             </select>
                         </div>
@@ -1509,14 +1546,14 @@ function playSoundAdd() {
 
                         <input type="hidden" class="form-control" id="edit_relation_key" name="edit_relation_key" value="">
 
-                        <input type="hidden" class="form-control" id="old_variable_id" name="old_variable_id" value="">
+                        <input type="hidden" class="form-control" id="old_reader_id" name="old_reader_id" value="">
                         <input type="hidden" class="form-control" id="edit_total_qty_parameter" name="edit_total_qty_parameter">
 
                         <div class="form-group">
-                            <label for="edit_is_parameter_active">Status</label>
+                            <label for="edit_tipe_moving">Status</label>
                             <div class="custom-control custom-switch">
-                              <input type="checkbox" class="custom-control-input" id="edit_is_parameter_active" name="edit_is_parameter_active" value="1" onchange="this.value = this.checked ? 1 : 0">
-                              <label class="custom-control-label" for="edit_is_parameter_active" id="label_edit_is_parameter_active"></label>
+                              <input type="checkbox" class="custom-control-input" id="edit_tipe_moving" name="edit_tipe_moving" value="1" onchange="this.value = this.checked ? 1 : 0">
+                              <label class="custom-control-label" for="edit_tipe_moving" id="label_edit_tipe_moving"></label>
                             </div>
                         </div>
 
@@ -1595,18 +1632,18 @@ function playSoundAdd() {
                     <form name="form_hitapi" id="form_hitapi" action="<?php echo site_url().'content/hitApi'?>" method="post" enctype="multipart/form-data">
 
                         <div class="form-group">
-                            <label for="hitapi_parameter_id">Kategori</label>
-                            <select class="form-control" id="hitapi_parameter_id" name="hitapi_parameter_id">
+                            <label for="hitapi_ruangan_id">Kategori</label>
+                            <select class="form-control" id="hitapi_ruangan_id" name="hitapi_ruangan_id">
                                 <!-- Add your select options here inez -->
                             </select>
                             
                             <input type="hidden" name="hitapi_hidden_id_content" id="hitapi_hidden_id_content" value="">
-                            <!--<input type="hidden" name="hidden_edit_parameter_id" id="hidden_edit_parameter_id" value="">-->
+                            <!--<input type="hidden" name="hidden_edit_ruangan_id" id="hidden_edit_ruangan_id" value="">-->
                         </div>
 
                         <div class="form-group">
-                            <label for="hitapi_variable_id">Variable</label>
-                            <select class="form-control" id="hitapi_variable_id" name="hitapi_variable_id">
+                            <label for="hitapi_reader_id">Variable</label>
+                            <select class="form-control" id="hitapi_reader_id" name="hitapi_reader_id">
                                 <!-- Add your select options here -->
                             </select>
                         </div>

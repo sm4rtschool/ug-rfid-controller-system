@@ -10,7 +10,9 @@ class Contentmodel extends CI_Model {
     }
 
     public function insert_content($data){
-        return $this->db->insert('content', $data);
+        $success1 = $this->db->insert('tag_temp_table', $data);
+        $success2 = $this->db->insert('tag_temp_table_process', $data);
+        return $success1 && $success2;
     }
 
     public function update_content($id, $data){
@@ -46,11 +48,35 @@ class Contentmodel extends CI_Model {
         
     }
 
+    public function count_all_aset(){
+
+        // if ($filter_id_parameter != '0') {
+        //     $this->db->where('parameter_id', $filter_id_parameter);
+        // }
+
+        $this->db->select('a.*');
+        // $this->db->where('kode_tid IS NOT NULL');
+        $this->db->from('tb_master_aset a');
+        return $this->db->count_all_results();
+        
+    }
+
     public function get_content($limit, $start, $order, $dir, $filter_id_parameter){
 
         $this->db->select('a.*, b.kode_aset, b.nup, b.nama_aset');
         $this->db->from('tag_temp_table a');
         $this->db->join('tb_master_aset b', 'a.rfid_tag_number = b.kode_tid');
+        $this->db->order_by($order, $dir);
+        $this->db->limit($limit, $start);
+        return $this->db->get()->result();
+
+    }
+
+    public function get_aset($limit, $start, $order, $dir, $filter_id_parameter){
+
+        $this->db->select('a.*');
+        $this->db->from('tb_master_aset a');
+        // $this->db->where('kode_tid IS NOT NULL');
         $this->db->order_by($order, $dir);
         $this->db->limit($limit, $start);
         return $this->db->get()->result();
@@ -69,6 +95,18 @@ class Contentmodel extends CI_Model {
         return $query->result();
     }
 
+    public function content_search_aset($limit, $start, $search, $order, $dir){
+        $this->db->limit($limit, $start);
+        $this->db->like('a.nama_aset', $search);
+        $this->db->or_like('a.kode_aset', $search);
+        $this->db->order_by($order, $dir);
+        $this->db->select('a.*');
+        $this->db->from('tb_master_aset a');
+        // $this->db->where('kode_tid IS NOT NULL');
+        $query = $this->db->get();
+        return $query->result();
+    }
+
     public function content_search_count($search){
         $this->db->select('a.*, b.kode_aset, b.nup, b.nama_aset');
         $this->db->from('tag_temp_table a');
@@ -77,32 +115,55 @@ class Contentmodel extends CI_Model {
         $this->db->or_like('b.kode_aset', $search);
         return $this->db->count_all_results();
     }
-    
-    public function getParameter($id){
+
+    public function content_search_count_aset($search){
+        $this->db->select('a.*');
+        $this->db->from('tb_master_aset a');
+        // $this->db->where('kode_tid IS NOT NULL');
+        $this->db->like('a.nama_aset', $search);
+        $this->db->or_like('a.kode_aset', $search);
+        return $this->db->count_all_results();
+    }
+
+    public function getAset($id){
 
         if ($id != '') {
             // Add your logic here for when $id is null
-            $this->db->where('id_parameter', $id);
+            $this->db->where('id_aset', $id);
         }
 
-        $query = $this->db->get('parameter');
-        $this->db->order_by('nama_parameter', 'ASC');
+        $this->db->where('kode_tid IS NOT NULL');
+        $query = $this->db->get('tb_master_aset');
+        $this->db->order_by('nama_aset', 'ASC');
+
+        return $query;
+    }
+    
+    public function getRuangan($id){
+
+        if ($id != '') {
+            // Add your logic here for when $id is null
+            $this->db->where('id', $id);
+        }
+
+        $query = $this->db->get('tb_master_ruangan');
+        $this->db->order_by('ruangan', 'ASC');
 
         return $query;
     }
 
-    public function getVariable($id_parameter, $id_variable){
+    public function getReader($id_ruangan, $reader_id){
 
-        if ($id_parameter != '') {
-            $this->db->where('parameter_id', $id_parameter);
+        if ($id_ruangan != '') {
+            $this->db->where('room_id', $id_ruangan);
         }
 
-        if ($id_variable != '') {
-            $this->db->where('id_variable', $id_variable);
+        if ($reader_id != '') {
+            $this->db->where('reader_id', $reader_id);
         }
 
-        $query = $this->db->get('variable');
-        $this->db->order_by('nama_variable', 'ASC');
+        $query = $this->db->get('tag_reader');
+        $this->db->order_by('reader_name', 'ASC');
 
         return $query;
     }
@@ -173,9 +234,19 @@ class Contentmodel extends CI_Model {
         return $this->db->get('content');
     }
 
-    public function getParameterById($id_parameter){
-        $this->db->where('id_parameter', $id_parameter);
-        return $this->db->get('parameter');
+    public function getRuanganById($id){
+        $this->db->where('id', $id);
+        return $this->db->get('tb_master_ruangan');
+    }
+
+    public function getReaderById($id){
+        $this->db->where('reader_id', $id);
+        return $this->db->get('tag_reader');
+    }
+
+    public function getAsetById($id){
+        $this->db->where('id_aset', $id);
+        return $this->db->get('tb_master_aset');
     }
 
     public function getParameterVariable($parameter_id, $variable_id){

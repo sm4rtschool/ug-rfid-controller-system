@@ -204,7 +204,7 @@ input:checked + .slider:before {
   <script src="<?php echo base_url(); ?>assets/js/socket.io.js"></script>
 
   <!-- Project Analytics -->
-  <script type="text/javascript" src="<?php echo base_url(); ?>assets/js/keen-analytics.js"></script>
+  <!-- <script type="text/javascript" src="<?php echo base_url(); ?>assets/js/keen-analytics.js"></script> -->
 
   <!-- Responsivevoice -->
   <!-- Get API Key -> https://responsivevoice.org/ -->
@@ -543,7 +543,7 @@ input:checked + .slider:before {
 
     }
 
-    function updateStatus(id_temp_table, rfid_tag_number, output, room_id, reader_id, kategori_pergerakan, keterangan_pergerakan, lokasi_terakhir, nama_lokasi_terakhir, is_legal_moving) {
+    function updateStatus(id_temp_table, rfid_tag_number, output, room_id, reader_id, kategori_pergerakan, keterangan_pergerakan, lokasi_terakhir, nama_lokasi_terakhir, is_legal_moving, borrow) {
 
       // alert('Update Status: ' + rfid_tag_number + ' - ' + output + ' - ' + room_id + ' - ' + reader_id + ' - ' + kategori_pergerakan + ' - ' + keterangan_pergerakan + ' - ' + lokasi_terakhir + ' - ' + nama_lokasi_terakhir);
 
@@ -561,7 +561,8 @@ input:checked + .slider:before {
                   keterangan_pergerakan: keterangan_pergerakan,
                   lokasi_terakhir: lokasi_terakhir,
                   nama_lokasi_terakhir: nama_lokasi_terakhir,
-                  is_legal_moving: is_legal_moving
+                  is_legal_moving: is_legal_moving,
+                  borrow: borrow
                 },
                 success: function(response) {
                     var responseData = JSON.parse(response);
@@ -625,6 +626,8 @@ input:checked + .slider:before {
 
                         var lokasi_terakhir_id = dataLastLocation.lokasi_terakhir;
                         var nama_lokasi_terakhir = dataLastLocation.nama_lokasi_terakhir;
+
+                        var borrow = dataLastLocation.borrow;
 
                         // alert('rfid tag number = ' + tagCode + ', lokasi di asset master : ' + lokasi_terakhir + ', status id di asset master = ' + posisi_aset + ', nama lokasi di asset master = ' + nama_lokasi_terakhir);
 
@@ -727,7 +730,7 @@ input:checked + .slider:before {
 
                         // alert('ready to update...reader angle out' + ', posisi aset = ' + posisi_aset);
 
-                        updateStatus(id_temp_table, rfid_tag_number, output, room_id_scan, reader_id, kategori_pergerakan, keterangan_pergerakan, room_id_scan, room_name, is_legal_moving).then(function(message) {
+                        updateStatus(id_temp_table, rfid_tag_number, output, room_id_scan, reader_id, kategori_pergerakan, keterangan_pergerakan, room_id_scan, room_name, is_legal_moving, borrow).then(function(message) {
                           //alert(message);
                           console.log("Status updated:", message);
                         }).catch(function(error) {

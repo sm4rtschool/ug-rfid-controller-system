@@ -179,6 +179,9 @@ class Content extends CI_Controller
 
     public function store()
     {
+
+        date_default_timezone_set('Asia/Jakarta');
+        $waktu = date('Y-m-d H:i:s');
         
         // Add your store logic here
         $room_id = $this->input->post('ruangan_id');
@@ -201,6 +204,7 @@ class Content extends CI_Controller
             'reader_angle' => $reader_angle,
             'reader_gate' => $reader_gate,
             'rfid_tag_number' => $rfid_tag_number,
+            'waktu' => $waktu,
             'is_legal_moving' => $is_legal_moving
         ];
 

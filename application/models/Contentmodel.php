@@ -21,6 +21,7 @@ class Contentmodel extends CI_Model
 
         if (!empty($data)) {
             $this->db->insert_batch('tag_temp_table', $data); // Masukkan langsung ke database
+            $this->db->insert_batch('tag_temp_table_process', $data); // Masukkan langsung ke database
         }
     }
 

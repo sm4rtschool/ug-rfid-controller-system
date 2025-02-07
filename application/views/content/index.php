@@ -945,7 +945,10 @@
           data: "reader_gate",
           className: "dt-center"
         },
-
+        {
+          data: "reader_angle",
+          className: "dt-center"
+        },
         {
           data: "waktu",
           className: "dt-center"
@@ -1464,7 +1467,7 @@
         <th style="text-align: center;">Lokasi Terakhir</th>
         <!-- <th style="text-align: center;">Ruangan</th> -->
         <th style="text-align: center;">Gate</th>
-        <!-- <th style="text-align: center;">Angle</th> -->
+        <th style="text-align: center;">Angle</th>
         <th style="text-align: center;">Waktu</th>
         <th style="text-align: center;">Kode TID</th>
         <th style="text-align: center;">Kode Barang</th>
@@ -1881,6 +1884,7 @@
       }
       let rat = $('#reader_antena').val();
       let rag = $('#reader_gate').val();
+      let reader_angle = $('#reader_angle').val();
 
       var selectedRows = myTable.rows('.selected').data().toArray();
 
@@ -1899,6 +1903,7 @@
           reader_id: reader_id,
           reader_antena: rat,
           reader_gate: rag,
+          reader_angle: reader_angle,
           is_legal_moving: statusMoving,
         }));
 

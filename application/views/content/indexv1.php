@@ -36,57 +36,6 @@
 <!-- <div class="container-fluid"> -->
 
 <style>
-  .switch {
-    position: relative;
-    display: inline-block;
-    width: 40px;
-    height: 24px;
-  }
-
-  .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: 0.4s;
-    border-radius: 34px;
-  }
-
-  .slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    border-radius: 50%;
-    left: 0px;
-    bottom: 0px;
-    background-color: white;
-    transition: 0.4s;
-  }
-
-  input:checked+.slider {
-    background-color: rgb(213, 149, 2);
-  }
-
-  input:checked+.slider:before {
-    transform: translateX(26px);
-  }
-
-  .switch-label {
-    margin-left: 10px;
-    font-size: 16px;
-    vertical-align: middle;
-  }
-
   /* Styling dasar untuk tabel */
   table.dataTable {
     width: 100%;
@@ -172,11 +121,9 @@
 <!-- Add the following code snippet after the <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script> line in your HTML file-->
 
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
-<link href="https://cdn.datatables.net/select/1.2.7/css/select.dataTables.min.css" rel="stylesheet" type="text/css" />
-<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
 
 <script src="<?php echo base_url(); ?>assets/js/functions.js" type="text/javascript"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script type="text/javascript">
   function update_status(id, value) {
@@ -942,10 +889,17 @@
           className: "dt-center"
         },
         {
+          data: "Ruangan",
+          className: "dt-center"
+        },
+        {
           data: "reader_gate",
           className: "dt-center"
         },
-
+        {
+          data: "reader_angle",
+          className: "dt-center"
+        },
         {
           data: "waktu",
           className: "dt-center"
@@ -1045,7 +999,7 @@
             }
           ],
           "order": [
-            [2, "desc"]
+            [1, "asc"]
           ],
           "fnDrawCallback": function(oSettings) {
             uncheck_all();
@@ -1252,7 +1206,6 @@
       return false;
     }
     */
-
 
     let ruangan_id = $('#ruangan_id').val();
 
@@ -1462,9 +1415,9 @@
         <th>No.</th>
         <th style="text-align: center;">ID</th>
         <th style="text-align: center;">Lokasi Terakhir</th>
-        <!-- <th style="text-align: center;">Ruangan</th> -->
+        <th style="text-align: center;">Ruangan</th>
         <th style="text-align: center;">Gate</th>
-        <!-- <th style="text-align: center;">Angle</th> -->
+        <th style="text-align: center;">Angle</th>
         <th style="text-align: center;">Waktu</th>
         <th style="text-align: center;">Kode TID</th>
         <th style="text-align: center;">Kode Barang</th>
@@ -1526,18 +1479,31 @@
                 <input type="hidden" class="form-control" id="reader_gate" name="reader_gate" value="">
               </div>
 
+              <div class="form-group">
+                <label for="reader_angle">Reader Angle</label>
+                <select class="form-control" id="reader_angle" name="reader_angle">
+                  <!-- Add your select options here -->
+                  <option value="0" selected>- Silahkan Pilih -</option>
+                  <option value="in">In</option>
+                  <option value="out">Out</option>
+                </select>
+              </div>
 
+              <div class="form-group">
+                <label for="free_text_tts">Nama Aset</label>
+                <select class="form-control" id="id_aset" name="id_aset">
+                  <!-- Add your select options here -->
+                </select>
+              </div>
 
               <input type="hidden" class="form-control" id="rfid_tag_number" name="rfid_tag_number" value="">
 
               <div class="form-group">
-                <label for="tipe_moving">Tipe Moving</label>
-
-                <label class="switch">
-                  <input type="checkbox" id="switchmoving" name="switch">
-                  <span class="slider"></span>
-                </label>
-                <span id="switch-label" class="switch-label">Ilegal</span>
+                <label for="tipe_moving">Status</label>
+                <div class="custom-control custom-switch">
+                  <input type="checkbox" class="custom-control-input" id="tipe_moving" name="tipe_moving" value="1" onchange="this.value = this.checked ? 1 : 0">
+                  <label class="custom-control-label" for="tipe_moving" id="label_tipe_moving"></label>
+                </div>
               </div>
 
             </form>
@@ -1548,30 +1514,22 @@
         <div class="row">
           <div class="col-md-12">
 
-            <table id="register" class="table table-bordered">
-              <thead>
-                <tr>
-                  <th> <input type="checkbox" id="MyTableCheckAllButton"></th>
-                  <th>Aset</th>
-                  <th>RFID Code</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php if (!empty($master_asets)): ?>
-                  <?php foreach ($master_asets as $user): ?>
-                    <tr>
-                      <td></td>
-                      <td id="nama_aset" key="nama_aset"><?php echo $user->nama_aset; ?></td>
-                      <td id="kode_tid" key="kode_tid"><?php echo $user->kode_tid; ?></td>
-                    </tr>
-                  <?php endforeach; ?>
-                <?php else: ?>
+            <!-- DataTables Table -->
+
+            <div class="table-responsive">
+              <table id="dataTableModal" class="display table table-striped table-bordered" style="width:100%">
+                <thead>
                   <tr>
-                    <td colspan="3">Tidak ada data</td>
+                    <th><input type="checkbox" id="select_all"></th>
+                    <th>Nama</th>
+                    <th>RFID Tag Number</th>
                   </tr>
-                <?php endif; ?>
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+
+                </tbody>
+              </table>
+            </div>
 
           </div>
         </div>
@@ -1580,7 +1538,7 @@
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button id="savebtn" type="button" class="btn btn-primary" id="saveDatabase">Save</button>
+        <button onclick="store()" type="button" class="btn btn-primary" id="saveDatabase">Save</button>
       </div>
 
     </div>
@@ -1762,204 +1720,5 @@
 </div>
 
 </body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/select/1.2.7/js/dataTables.select.min.js"></script>
-
-<script>
-  $(document).ready(function() {
-    // checked pagination
-    let myTable = $('#register').DataTable({
-      columnDefs: [{
-        orderable: false,
-        className: 'select-checkbox',
-        targets: 0,
-      }],
-      select: {
-        style: 'multi',
-        selector: 'td:first-child',
-        headerCheckbox: 'select-page'
-      },
-      // select: {
-      //     style: 'os', // 'single', 'multi', 'os', 'multi+shift'
-      //     selector: 'td:first-child',
-      // },
-
-    });
-
-
-
-    $('#MyTableCheckAllButton').click(function() {
-      if (myTable.rows({
-          selected: true
-        }).count() > 0) {
-        myTable.rows().deselect();
-        return;
-      }
-
-      myTable.rows().select();
-
-    });
-
-    myTable.on('select deselect', function(e, dt, type, indexes) {
-      if (type === 'row') {
-        // We may use dt instead of myTable to have the freshest data.
-        if (dt.rows().count() === dt.rows({
-            selected: myTable.rows('.selected').data().toArray().length != 0
-          }).count()) {
-          var uncek1 = myTable.rows('.selected').data().toArray().length
-
-          // Deselect all items button.
-          if (uncek1 < 1) {
-            $("#MyTableCheckAllButton").prop('checked', false);
-            $('#MyTableCheckAllButton').removeClass('far fa-minus-square');
-            $('#MyTableCheckAllButton').removeClass('fa-check-square');
-
-          } else {
-            $("#MyTableCheckAllButton").prop('checked', true);
-
-          }
-          // $('#MyTableCheckAllButton').addClass('far fa-check-square');
-          return;
-        }
-
-        if (dt.rows({
-            selected: myTable.rows('.selected').data().toArray().length != 0
-          }).count() === 0) {
-          var uncek2 = myTable.rows('.selected').data().toArray().length
-          // Deselect all items button.
-          console.log("vv", uncek2);
-
-          if (uncek2 === 0) {
-            $('#MyTableCheckAllButton').removeClass('fa-minus-square');
-            $('#MyTableCheckAllButton').removeClass('fa-check-square');
-
-          } else {
-            $('#MyTableCheckAllButton').addClass('far fa-square');
-
-          }
-          // Select all items button.
-          return;
-        }
-
-        var arrl = myTable.rows('.selected').data().toArray().length
-        // Deselect all items button.
-        if (arrl === 0) {
-          $('#MyTableCheckAllButton').removeClass('fa-square');
-        } else {
-          $('#MyTableCheckAllButton').removeClass('fa-check-square');
-          $('#MyTableCheckAllButton').addClass('far fa-minus-square');
-        }
-
-        // // Deselect some items button.
-        // $('#MyTableCheckAllButton').addClass('far fa-minus-square');
-        // $('#MyTableCheckAllButton').removeClass('fa-square');
-
-      }
-    });
-    // batas check pagination
-
-
-    $('#savebtn').click(function(e) {
-
-
-
-      let ruangan_id = $('#ruangan_id').val();
-
-      if (ruangan_id == '0') {
-        alert('Ruangan harus diisi');
-        ruangan_id.focus();
-        return false;
-      }
-
-      let reader_id = $('#reader_id').val();
-
-      if (reader_id == '0') {
-        alert('Reader harus diisi');
-        reader_id.focus();
-        return false;
-      }
-      let rat = $('#reader_antena').val();
-      let rag = $('#reader_gate').val();
-
-      var selectedRows = myTable.rows('.selected').data().toArray();
-
-      let isChecked = document.getElementById("switchmoving").checked;
-      let statusMoving = isChecked ? 1 : 0;
-
-
-      if (selectedRows.length > 0 && reader_id && ruangan_id) {
-        // Ambil index ke-2 dari setiap data yang dipilih
-        var selectedData = selectedRows.map(row => ({
-          rfid_tag_number: row[2], // Ambil index ke-2
-          lokasi_terakhir_id: ruangan_id, // Tambahkan kategori dari select
-          nama_lokasi_terakhir: '',
-          room_id: ruangan_id,
-          room_name: '',
-          reader_id: reader_id,
-          reader_antena: rat,
-          reader_gate: rag,
-          is_legal_moving: statusMoving
-        }));
-
-
-        // Kirim array ke server dengan AJAX
-        $.ajax({
-          url: '<?php echo site_url(); ?>content/store',
-          method: 'POST',
-          data: {
-            selectedData: JSON.stringify(selectedData)
-          }, // Kirim sebagai array
-          contentType: 'application/x-www-form-urlencoded',
-          success: function(response) {
-            let res = JSON.parse(response);
-            console.log('Server Response:', res.status);
-            if (res.status === 'success') {
-              Swal.fire({
-                title: "Berhasil!",
-                text: res.message,
-                icon: "success"
-              }).then(() => {
-                document.getElementById("databaseModal").classList.remove("show");
-                document.getElementById("databaseModal").style.display = "none";
-                document.body.classList.remove("modal-open");
-                $(".modal-backdrop").remove();
-                location.reload();
-              });
-
-            } else {
-              Swal.fire("Gagal!", res.message, "error");
-            }
-          }
-        });
-      } else {
-        alert("❌ Gagal: Tidak Ada aset yang dipilih");
-      }
-    });
-
-
-  });
-
-  // Ambil elemen switch dan label
-  const switchElement = document.getElementById('switchmoving');
-  const labelElement = document.getElementById('switch-label');
-
-  // Fungsi untuk memperbarui label berdasarkan status switch
-  function updateLabel() {
-    if (switchElement.checked) {
-      labelElement.textContent = 'Legal';
-    } else {
-      labelElement.textContent = 'Ilegal';
-    }
-  }
-
-  // Panggil updateLabel saat switch diubah
-  switchElement.addEventListener('change', updateLabel);
-
-  // Panggil updateLabel pada saat halaman pertama kali dimuat
-  updateLabel();
-</script>
-
-
 
 </html>

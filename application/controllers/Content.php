@@ -1,12 +1,12 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /**
-*	Content Controller
-*
-*	@author Ridwan Sapoetra | sm4rtschool@gmail.com | 082113332009
-*
-*/
+ *	Content Controller
+ *
+ *	@author Ridwan Sapoetra | sm4rtschool@gmail.com | 082113332009
+ *
+ */
 
 class Content extends CI_Controller
 {
@@ -24,12 +24,12 @@ class Content extends CI_Controller
 
         $parameter = $this->home->get_parameter();
 
-		$array_parameter = array();
-		foreach ($parameter as $val){
-			$array_parameter[$val->id] = $val->kategori;
-		}
-		
-		$data['kategori'] = $array_parameter;
+        $array_parameter = array();
+        foreach ($parameter as $val) {
+            $array_parameter[$val->id] = $val->kategori;
+        }
+
+        $data['kategori'] = $array_parameter;
 
         // load data sound
 
@@ -44,12 +44,13 @@ class Content extends CI_Controller
         $this->form_validation->set_rules('parameter_id', 'Parameter', 'required');
         $this->form_validation->set_rules('variable_id', 'Variable', 'required');
         $this->form_validation->set_rules('is_parameter_active', 'Is Parameter Active', 'required');
-
+        //data aset
+        $this->data['master_asets'] = $this->Contentmodel->get_dataaset();
         //$data['contents'] = $this->Contentmodel->select_content();
         $this->load->view('partials/_mydashboard_header', $data);
-        $this->load->view('content/index', $data);
+        $this->load->view('content/index', $this->data);
         //$this->load->view('partials/_mydashboard_footer');
-        
+
     }
 
     public function serverSideData()
@@ -78,7 +79,7 @@ class Content extends CI_Controller
         $totalData = $this->Contentmodel->count_all_content($filter_id_parameter);
         $totalFiltered = $totalData;
 
-        if(empty($this->input->post('search')['value'])) {
+        if (empty($this->input->post('search')['value'])) {
             $contents = $this->Contentmodel->get_content($limit, $start, $order, $dir, $filter_id_parameter);
         } else {
             $search = $this->input->post('search')['value'];
@@ -86,17 +87,19 @@ class Content extends CI_Controller
             $totalFiltered = $this->Contentmodel->content_search_count($search);
         }
 
+
+
         $data = array();
-        if(!empty($contents)) {
+        if (!empty($contents)) {
             $autoNumber = $start + 1;
-            foreach($contents as $row) {
+            foreach ($contents as $row) {
 
                 $kategori_pergerakan = ($row->kategori_pergerakan == 'normal' ? '<span style="color:green;">Normal</span>' : '<span style="color:red;">Anomali</span>');
 
                 $nestedData['No'] = $autoNumber;
                 $autoNumber++;
                 $nestedData['ID Content'] = $row->id_temp_table;
-                $nestedData['lokasi_sebelumnya'] = $row->nama_lokasi_terakhir;
+                $nestedData['lokasi_sebelumnya'] = $row->ruangan;
                 $nestedData['Ruangan'] = $row->room_name;
                 $nestedData['reader_gate'] = $row->reader_gate;
                 $nestedData['reader_angle'] = $row->reader_angle;
@@ -143,7 +146,7 @@ class Content extends CI_Controller
         $totalData = $this->Contentmodel->count_all_aset();
         $totalFiltered = $totalData;
 
-        if(empty($this->input->post('search')['value'])) {
+        if (empty($this->input->post('search')['value'])) {
             $contents = $this->Contentmodel->get_aset($limit, $start, $order, $dir, $filter_id_parameter);
         } else {
             $search = $this->input->post('search')['value'];
@@ -152,9 +155,9 @@ class Content extends CI_Controller
         }
 
         $data = array();
-        if(!empty($contents)) {
+        if (!empty($contents)) {
             $autoNumber = $start + 1;
-            foreach($contents as $row) {
+            foreach ($contents as $row) {
 
                 // $nestedData['no'] = $autoNumber;
                 $autoNumber++;
@@ -179,48 +182,32 @@ class Content extends CI_Controller
 
     public function store()
     {
-        
-        // Add your store logic here
-        $room_id = $this->input->post('ruangan_id');
-        $room_name = $this->input->post('room_name');
 
-        $reader_id = $this->input->post('reader_id');
-        $reader_antena = $this->input->post('reader_antena');
-        $reader_angle = $this->input->post('reader_angle');
-        $reader_gate = $this->input->post('reader_gate');
-        $rfid_tag_number = $this->input->post('rfid_tag_number');
-        $is_legal_moving = $this->input->post('tipe_moving');
+        $selectedData = json_decode($this->input->post('selectedData'), true); // Decode JSON ke array
 
-        $data = [
-            'lokasi_terakhir_id' => $room_id,
-            'nama_lokasi_terakhir' => $room_name,
-            'room_id' => $room_id,
-            'room_name' => $room_name,
-            'reader_id' => $reader_id,
-            'reader_antena' => $reader_antena,
-            'reader_angle' => $reader_angle,
-            'reader_gate' => $reader_gate,
-            'rfid_tag_number' => $rfid_tag_number,
-            'is_legal_moving' => $is_legal_moving
-        ];
-
-        // Save the data to the database
-        $is_success = $this->Contentmodel->insert_content($data);
-
-        if ($is_success) {
-            $message = "Data inserted successfully";
+        if (!empty($selectedData)) {
+            $this->Contentmodel->insert_content($selectedData); // Kirim ke model
+            echo json_encode(['status' => 'success', 'message' => 'Data berhasil disimpan!']);
         } else {
-            $message = "Failed to insert data";
+            echo json_encode(['status' => 'error', 'message' => 'Tidak ada data untuk disimpan.']);
         }
 
-        $output = array(
-			"is_success" => $is_success,
-			"message" => $message
-		);
-		
-		//output to json format
-		echo json_encode($output);
 
+        // $is_success = $this->Contentmodel->insert_content($selectedData);
+
+        // if ($is_success) {
+        //     $message = "Data inserted successfully";
+        // } else {
+        //     $message = "Failed to insert data";
+        // }
+
+        // $output = array(
+        //     "is_success" => $is_success,
+        //     "message" => $message
+        // );
+
+        // // //output to json format
+        // echo json_encode($output);
     }
 
     public function edit($id)
@@ -246,7 +233,6 @@ class Content extends CI_Controller
                 'message' => 'Data retrieved successfully',
                 'data' => $data
             ];
-
         } else {
             // Data not found
             $response = [
@@ -277,7 +263,7 @@ class Content extends CI_Controller
         $text_to_speech_active = $this->input->post('edit_text_to_speech_active');
 
         $is_light_strobe_active = $this->input->post('edit_is_light_strobe_active');
-        
+
         $free_text_tts = $this->input->post('edit_free_text_tts');
 
         if ($old_variable_id == $variable_id) {
@@ -286,7 +272,6 @@ class Content extends CI_Controller
                 'is_parameter_active' => $is_parameter_active,
                 'free_text_tts' => $free_text_tts
             );
-            
         } else {
 
             // klo variablenya di rubah sama user
@@ -295,7 +280,6 @@ class Content extends CI_Controller
                 'is_parameter_active' => $is_parameter_active,
                 'free_text_tts' => $free_text_tts
             );
-
         }
 
         // Update the data in the database
@@ -314,7 +298,6 @@ class Content extends CI_Controller
 
         // Output the response in JSON format
         echo json_encode($output);
-        
     }
 
     public function delete($id)
@@ -346,160 +329,147 @@ class Content extends CI_Controller
     }
 
     function load_dropdown_aset()
-	{
+    {
 
-		if ($this->Contentmodel->getAset('')->num_rows() > 0){
-			$is_data_ada = TRUE;
-			$list_data = $this->Contentmodel->getAset('')->result_array();
-		} else {
-			$is_data_ada = FALSE;
-		}
+        if ($this->Contentmodel->getAset('')->num_rows() > 0) {
+            $is_data_ada = TRUE;
+            $list_data = $this->Contentmodel->getAset('')->result_array();
+        } else {
+            $is_data_ada = FALSE;
+        }
 
-		$ddata = array();
+        $ddata = array();
 
-		foreach ($list_data as $qryget) 
-		{
+        foreach ($list_data as $qryget) {
 
-			$row = array();
+            $row = array();
 
-			$row['id_aset'] = $qryget['id_aset'];
-			$row['nama_aset'] = $qryget['nama_aset'];
-			$ddata[] = $row;
-		
-		}
+            $row['id_aset'] = $qryget['id_aset'];
+            $row['nama_aset'] = $qryget['nama_aset'];
+            $ddata[] = $row;
+        }
 
-		$output = array(
-			"is_data_ada" => $is_data_ada,
-			"list_data" => $ddata,
-		);
-		
-		//output to json format
-		echo json_encode($output);
-		
-	}
+        $output = array(
+            "is_data_ada" => $is_data_ada,
+            "list_data" => $ddata,
+        );
+
+        //output to json format
+        echo json_encode($output);
+    }
 
     function load_dropdown_ruangan()
-	{
+    {
 
-		if ($this->Contentmodel->getRuangan('')->num_rows() > 0){
-			$is_data_ada = TRUE;
-			$list_data = $this->Contentmodel->getRuangan('')->result_array();
-		} else {
-			$is_data_ada = FALSE;
-		}
+        if ($this->Contentmodel->getRuangan('')->num_rows() > 0) {
+            $is_data_ada = TRUE;
+            $list_data = $this->Contentmodel->getRuangan('')->result_array();
+        } else {
+            $is_data_ada = FALSE;
+        }
 
-		$ddata = array();
+        $ddata = array();
 
-		foreach ($list_data as $qryget) 
-		{
+        foreach ($list_data as $qryget) {
 
-			$row = array();
+            $row = array();
 
-			$row['id'] = $qryget['id'];
-			$row['ruangan'] = $qryget['ruangan'];
-			$ddata[] = $row;
-		
-		}
+            $row['id'] = $qryget['id'];
+            $row['ruangan'] = $qryget['ruangan'];
+            $ddata[] = $row;
+        }
 
-		$output = array(
-			"is_data_ada" => $is_data_ada,
-			"list_data" => $ddata,
-		);
-		
-		//output to json format
-		echo json_encode($output);
-		
-	}
+        $output = array(
+            "is_data_ada" => $is_data_ada,
+            "list_data" => $ddata,
+        );
+
+        //output to json format
+        echo json_encode($output);
+    }
 
     function load_dropdown_reader()
-	{
-		
-		$id_ruangan = $this->input->post('id_ruangan', true);
+    {
 
-		if ($this->Contentmodel->getReader($id_ruangan, '')->num_rows() > 0){
-			$is_data_ada = TRUE;
-			$list_data = $this->Contentmodel->getReader($id_ruangan, '')->result_array();
-		} else {
-			$is_data_ada = FALSE;
-		}
+        $id_ruangan = $this->input->post('id_ruangan', true);
 
-		$ddata = array();
+        if ($this->Contentmodel->getReader($id_ruangan, '')->num_rows() > 0) {
+            $is_data_ada = TRUE;
+            $list_data = $this->Contentmodel->getReader($id_ruangan, '')->result_array();
+        } else {
+            $is_data_ada = FALSE;
+        }
 
-		foreach ($list_data as $qryget) 
-		{
+        $ddata = array();
 
-			$row = array();
+        foreach ($list_data as $qryget) {
 
-			$row['reader_id'] = $qryget['reader_id'];
-			$row['reader_name'] = $qryget['reader_name'];
-			$ddata[] = $row;
-		
-		}
+            $row = array();
 
-		$output = array(
-			"is_data_ada" => $is_data_ada,
-			"list_data" => $ddata,
-		);
-		
-		//output to json format
-		echo json_encode($output);
-		
-	}
+            $row['reader_id'] = $qryget['reader_id'];
+            $row['reader_name'] = $qryget['reader_name'];
+            $ddata[] = $row;
+        }
 
-    function arduino_get_content(){
+        $output = array(
+            "is_data_ada" => $is_data_ada,
+            "list_data" => $ddata,
+        );
+
+        //output to json format
+        echo json_encode($output);
+    }
+
+    function arduino_get_content()
+    {
 
         $query = $this->Contentmodel->arduino_get_content();
 
-        if ($query){
+        if ($query) {
 
             $output = array(
                 "is_success" => true,
                 "data_state" => "available"
             );
-
         } else {
             $output = array(
                 "is_success" => false,
                 "data_state" => "not available"
             );
         }
-        
-        echo json_encode($output);
 
+        echo json_encode($output);
     }
 
     function load_dropdown_sound()
-	{
+    {
 
-		if ($this->Contentmodel->getSound()->num_rows() > 0){
-			$is_data_ada = TRUE;
-			$list_data = $this->Contentmodel->getSound()->result_array();
-		} else {
-			$is_data_ada = FALSE;
-		}
+        if ($this->Contentmodel->getSound()->num_rows() > 0) {
+            $is_data_ada = TRUE;
+            $list_data = $this->Contentmodel->getSound()->result_array();
+        } else {
+            $is_data_ada = FALSE;
+        }
 
-		$ddata = array();
+        $ddata = array();
 
-		foreach ($list_data as $qryget) 
-		{
+        foreach ($list_data as $qryget) {
 
-			$row = array();
+            $row = array();
 
-			$row['id_sound'] = $qryget['id_sound'];
-			$row['nama_sound'] = $qryget['nama_sound'];
-			$ddata[] = $row;
-		
-		}
+            $row['id_sound'] = $qryget['id_sound'];
+            $row['nama_sound'] = $qryget['nama_sound'];
+            $ddata[] = $row;
+        }
 
-		$output = array(
-			"is_data_ada" => $is_data_ada,
-			"list_data" => $ddata,
-		);
-		
-		//output to json format
-		echo json_encode($output);
-		
-	}
+        $output = array(
+            "is_data_ada" => $is_data_ada,
+            "list_data" => $ddata,
+        );
+
+        //output to json format
+        echo json_encode($output);
+    }
 
     public function getSoundById()
     {
@@ -516,7 +486,6 @@ class Content extends CI_Controller
                 'is_tts' => $data->is_tts,
                 'text_tts' => $data->text_tts
             );
-
         } else {
 
             $output = array(
@@ -527,11 +496,9 @@ class Content extends CI_Controller
                 'is_tts' => 0,
                 'text_tts' => ''
             );
-
         }
 
         echo json_encode($output);
-
     }
 
     public function resetData()
@@ -553,7 +520,6 @@ class Content extends CI_Controller
         );
 
         echo json_encode($response);
-
     }
 
     function playSound()
@@ -569,7 +535,7 @@ class Content extends CI_Controller
         if ($data) {
             $output = array(
                 'ruangan_id' => $data->id,
-                'ruangan' => $data->ruangan            
+                'ruangan' => $data->ruangan
             );
         }
 
@@ -602,7 +568,7 @@ class Content extends CI_Controller
         if ($data) {
             $output = array(
                 'id_aset' => $data->id_aset,
-                'rfid_tag_number' => $data->kode_tid,            
+                'rfid_tag_number' => $data->kode_tid,
             );
         }
 
@@ -610,44 +576,40 @@ class Content extends CI_Controller
     }
 
     function setStateAll()
-	{
-		
-		$id = $this->input->post('id');
+    {
+
+        $id = $this->input->post('id');
         $state = $this->input->post('state');
-		$is_success = $this->Contentmodel->setStateAll($id, $state);
+        $is_success = $this->Contentmodel->setStateAll($id, $state);
 
-		if ($is_success){
-			$status = "success";
-			$msg = "Data successfully processed !!";
-			$data_notif = "Data berhasil di proses !!";
-		}
-		else {						
-			$status = "error";
-			$msg = "Something went wrong when processing the data, please try again.";
-			$data_notif = "Data gagal di proses !!";
-		}	
-	
-		echo json_encode(array('status' => $status, 'msg' => $msg, 'data_notif' => $data_notif));
+        if ($is_success) {
+            $status = "success";
+            $msg = "Data successfully processed !!";
+            $data_notif = "Data berhasil di proses !!";
+        } else {
+            $status = "error";
+            $msg = "Something went wrong when processing the data, please try again.";
+            $data_notif = "Data gagal di proses !!";
+        }
 
-	}
+        echo json_encode(array('status' => $status, 'msg' => $msg, 'data_notif' => $data_notif));
+    }
 
     public function change($id, $value)
     {
         $id = $this->uri->segment(3);
         $value = $this->uri->segment(4);
         $is_success = $this->Contentmodel->change_status_content($id, $value);
-        
-        if ($is_success){
+
+        if ($is_success) {
             $status = "success";
             $msg = "Data successfully processed !!";
             $data_notif = "Data berhasil di proses !!";
-        }
-        else {                        
+        } else {
             $status = "error";
             $msg = "Something went wrong when processing the data, please try again.";
             $data_notif = "Data gagal di proses !!";
         }
         redirect('content');
     }
-
 }

@@ -182,15 +182,24 @@ class Content extends CI_Controller
 
     public function store()
     {
+        date_default_timezone_set("Asia/Jakarta");
+        $waktu = date("Y-m-d H:i:s"); // Waktu server
 
         $selectedData = json_decode($this->input->post('selectedData'), true); // Decode JSON ke array
 
         if (!empty($selectedData)) {
+            // Tambahkan waktu server ke setiap data
+            foreach ($selectedData as &$data) {
+                $data['waktu'] = $waktu;
+            }
+
             $this->Contentmodel->insert_content($selectedData); // Kirim ke model
+
             echo json_encode(['status' => 'success', 'message' => 'Data berhasil disimpan!']);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Tidak ada data untuk disimpan.']);
         }
+
 
 
         // $is_success = $this->Contentmodel->insert_content($selectedData);

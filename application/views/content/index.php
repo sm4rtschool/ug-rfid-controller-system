@@ -1899,7 +1899,7 @@
           reader_id: reader_id,
           reader_antena: rat,
           reader_gate: rag,
-          is_legal_moving: statusMoving
+          is_legal_moving: statusMoving,
         }));
 
 

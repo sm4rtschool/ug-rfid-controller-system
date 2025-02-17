@@ -65,8 +65,9 @@ class Content extends CI_Controller
             5 => 'room_name',
             6 => 'reader_gate',
             7 => 'reader_angle',
-            8 => 'waktu',
-            9 => 'Action'
+            8 => 'kategori_pergerakan',
+            9 => 'waktu',
+            10 => 'Action'
         );
 
         $limit = $this->input->post('length');
@@ -99,10 +100,10 @@ class Content extends CI_Controller
                 $nestedData['No'] = $autoNumber;
                 $autoNumber++;
                 $nestedData['ID Content'] = $row->id_temp_table;
-                $nestedData['lokasi_sebelumnya'] = $row->ruangan;
-                $nestedData['Ruangan'] = $row->room_name;
+                $nestedData['room_name'] = $row->room_name;
                 $nestedData['reader_gate'] = $row->reader_gate;
                 $nestedData['reader_angle'] = $row->reader_angle;
+                $nestedData['is_legal_moving'] = $row->kategori_pergerakan;
                 $nestedData['waktu'] = $row->waktu;
                 $nestedData['rfid_tag_number'] = $row->rfid_tag_number;
                 $nestedData['Kode Brg'] = $row->kode_aset;
@@ -188,6 +189,7 @@ class Content extends CI_Controller
         $selectedData = json_decode($this->input->post('selectedData'), true); // Decode JSON ke array
 
         if (!empty($selectedData)) {
+
             // Tambahkan waktu server ke setiap data
             foreach ($selectedData as &$data) {
                 $data['waktu'] = $waktu;
@@ -199,8 +201,6 @@ class Content extends CI_Controller
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Tidak ada data untuk disimpan.']);
         }
-
-
 
         // $is_success = $this->Contentmodel->insert_content($selectedData);
 
@@ -563,6 +563,8 @@ class Content extends CI_Controller
                 'reader_antena' => $data->reader_antena,
                 'reader_angle' => $data->reader_angle,
                 'reader_gate' => $data->reader_gate,
+                'reader_identity' => $data->reader_identity,
+                'flag_alarm' => $data->flag_alarm,
             );
         }
 

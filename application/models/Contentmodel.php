@@ -63,7 +63,6 @@ class Contentmodel extends CI_Model
 
     public function count_all_aset()
     {
-
         // if ($filter_id_parameter != '0') {
         //     $this->db->where('parameter_id', $filter_id_parameter);
         // }
@@ -76,11 +75,11 @@ class Contentmodel extends CI_Model
 
     public function get_content($limit, $start, $order, $dir, $filter_id_parameter)
     {
-
-        $this->db->select('a.*, b.kode_aset, b.nup, b.nama_aset, r.ruangan');
+        // $this->db->select('a.*, b.kode_aset, b.nup, b.nama_aset, r.ruangan');
+        $this->db->select('a.*, b.kode_aset, b.nup, b.nama_aset, (CASE WHEN a.is_legal_moving = 1 THEN "Legal" ELSE "Illegal" END) as kategori_pergerakan');
         $this->db->from('tag_temp_table a');
         $this->db->join('tb_master_aset b', 'a.rfid_tag_number = b.kode_tid');
-        $this->db->join('tb_master_ruangan r', 'r.id = a.lokasi_terakhir_id');
+        // $this->db->join('tb_master_ruangan r', 'r.id = a.lokasi_terakhir_id');
         $this->db->order_by($order, $dir);
         $this->db->limit($limit, $start);
         return $this->db->get()->result();
@@ -102,11 +101,12 @@ class Contentmodel extends CI_Model
         $this->db->limit($limit, $start);
         $this->db->like('b.nama_aset', $search);
         $this->db->or_like('b.kode_aset', $search);
+        $this->db->or_like('a.rfid_tag_number', $search);
+        // $this->db->or_like('a.kategori_pergerakan', $search);
         $this->db->order_by($order, $dir);
-        $this->db->select('a.*, b.kode_aset, b.nup, b.nama_aset, r.ruangan');
+        $this->db->select('a.*, b.kode_aset, b.nup, b.nama_aset, (CASE WHEN a.is_legal_moving = 1 THEN "Legal" ELSE "Illegal" END) as kategori_pergerakan');
         $this->db->from('tag_temp_table a');
         $this->db->join('tb_master_aset b', 'a.rfid_tag_number = b.kode_tid');
-        $this->db->join('tb_master_ruangan r', 'r.id = a.lokasi_terakhir_id');
         $query = $this->db->get();
         return $query->result();
     }

@@ -800,6 +800,8 @@
         $('#reader_angle').val(response.reader_angle);
         $('#reader_gate').val(response.reader_gate);
         // $('#tipe_moving').val(response.tipe_moving);
+        $('#reader_identity').val(response.reader_identity);
+        $('#flag_alarm').val(response.flag_alarm);
       });
 
     });
@@ -938,7 +940,7 @@
           className: "dt-center"
         },
         {
-          data: "lokasi_sebelumnya",
+          data: "room_name",
           className: "dt-center"
         },
         {
@@ -949,6 +951,12 @@
           data: "reader_angle",
           className: "dt-center"
         },
+
+        {
+          data: "is_legal_moving",
+          className: "dt-center"
+        },
+
         {
           data: "waktu",
           className: "dt-center"
@@ -1468,6 +1476,7 @@
         <!-- <th style="text-align: center;">Ruangan</th> -->
         <th style="text-align: center;">Gate</th>
         <th style="text-align: center;">Angle</th>
+        <th style="text-align: center;">Kategori Moving</th>
         <th style="text-align: center;">Waktu</th>
         <th style="text-align: center;">Kode TID</th>
         <th style="text-align: center;">Kode Barang</th>
@@ -1527,13 +1536,15 @@
                 <input type="hidden" class="form-control" id="reader_antena" name="reader_antena" value="">
                 <input type="hidden" class="form-control" id="reader_angle" name="reader_angle" value="">
                 <input type="hidden" class="form-control" id="reader_gate" name="reader_gate" value="">
+                <input type="hidden" class="form-control" id="reader_identity" name="reader_identity" value="">
+                <input type="hidden" class="form-control" id="flag_alarm" name="flag_alarm" value="">
               </div>
 
 
 
               <input type="hidden" class="form-control" id="rfid_tag_number" name="rfid_tag_number" value="">
 
-              <div class="form-group">
+              <!-- <div class="form-group">
                 <label for="tipe_moving">Tipe Moving</label>
 
                 <label class="switch">
@@ -1541,7 +1552,7 @@
                   <span class="slider"></span>
                 </label>
                 <span id="switch-label" class="switch-label">Ilegal</span>
-              </div>
+              </div> -->
 
             </form>
 
@@ -1769,8 +1780,10 @@
 <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/select/1.2.7/js/dataTables.select.min.js"></script>
 
-<script>
+<script type="text/javascript">
+
   $(document).ready(function() {
+
     // checked pagination
     let myTable = $('#register').DataTable({
       columnDefs: [{
@@ -1790,8 +1803,6 @@
 
     });
 
-
-
     $('#MyTableCheckAllButton').click(function() {
       if (myTable.rows({
           selected: true
@@ -1801,7 +1812,6 @@
       }
 
       myTable.rows().select();
-
     });
 
     myTable.on('select deselect', function(e, dt, type, indexes) {
@@ -1865,8 +1875,7 @@
 
     $('#savebtn').click(function(e) {
 
-
-
+      e.preventDefault();
       let ruangan_id = $('#ruangan_id').val();
 
       if (ruangan_id == '0') {
@@ -1882,31 +1891,34 @@
         reader_id.focus();
         return false;
       }
+
       let rat = $('#reader_antena').val();
       let rag = $('#reader_gate').val();
       let reader_angle = $('#reader_angle').val();
 
       var selectedRows = myTable.rows('.selected').data().toArray();
 
-      let isChecked = document.getElementById("switchmoving").checked;
-      let statusMoving = isChecked ? 1 : 0;
+      // let isChecked = document.getElementById("switchmoving").checked;
+      // let statusMoving = isChecked ? 1 : 0;
 
+      let reader_identity = $('#reader_identity').val();
+
+      let room_name = $('#room_name').val();
 
       if (selectedRows.length > 0 && reader_id && ruangan_id) {
         // Ambil index ke-2 dari setiap data yang dipilih
         var selectedData = selectedRows.map(row => ({
           rfid_tag_number: row[2], // Ambil index ke-2
           lokasi_terakhir_id: ruangan_id, // Tambahkan kategori dari select
-          nama_lokasi_terakhir: '',
+          nama_lokasi_terakhir: room_name,
           room_id: ruangan_id,
-          room_name: '',
+          room_name: room_name,
           reader_id: reader_id,
           reader_antena: rat,
           reader_gate: rag,
           reader_angle: reader_angle,
-          is_legal_moving: statusMoving,
+          is_legal_moving: reader_identity,
         }));
-
 
         // Kirim array ke server dengan AJAX
         $.ajax({
@@ -1929,7 +1941,9 @@
                 document.getElementById("databaseModal").style.display = "none";
                 document.body.classList.remove("modal-open");
                 $(".modal-backdrop").remove();
-                location.reload();
+                // location.reload();
+                myTable.rows().deselect();
+                reload_datatables();
               });
 
             } else {
@@ -1942,7 +1956,6 @@
       }
     });
 
-
   });
 
   // Ambil elemen switch dan label
@@ -1950,21 +1963,19 @@
   const labelElement = document.getElementById('switch-label');
 
   // Fungsi untuk memperbarui label berdasarkan status switch
-  function updateLabel() {
-    if (switchElement.checked) {
-      labelElement.textContent = 'Legal';
-    } else {
-      labelElement.textContent = 'Ilegal';
-    }
-  }
+  // function updateLabel() {
+  //   if (switchElement.checked) {
+  //     labelElement.textContent = 'Legal';
+  //   } else {
+  //     labelElement.textContent = 'Ilegal';
+  //   }
+  // }
 
   // Panggil updateLabel saat switch diubah
-  switchElement.addEventListener('change', updateLabel);
+  // switchElement.addEventListener('change', updateLabel);
 
   // Panggil updateLabel pada saat halaman pertama kali dimuat
-  updateLabel();
+  // updateLabel();
 </script>
-
-
 
 </html>

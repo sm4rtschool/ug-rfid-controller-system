@@ -401,6 +401,24 @@ class Controller extends CI_Controller
 		}
 	}
 
+	function getStatusAset(){
+		$kode_tid = $this->input->get('kode_tid');
+		$query = $this->controller->getStatusAset($kode_tid);
+		if ($query->num_rows() > 0) {
+			$response = array(
+				'success' => true,
+				'is_illegal' => true,
+				'data' => $query->result()
+			);
+		} else {
+			$response = array(
+				'success' => false,
+				'is_illegal' => false,
+				'data' => []
+			);
+		}
+		echo json_encode($response);
+	}
 	
 }
 

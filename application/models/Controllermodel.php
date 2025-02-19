@@ -148,13 +148,17 @@ class Controllermodel extends CI_Model
 
   }
 
-
   function getConfig($filter){
-
     $this->db->where('id_config', $filter);
     $query = $this->db->get('config');
     return $query;
+  }
 
+  function getStatusAset($kode_tid){
+    $this->db->where('tipe_moving', 0);
+    $this->db->where('kode_tid', $kode_tid);
+    $query = $this->db->get('tb_master_aset');
+    return $query;
   }
 
 }

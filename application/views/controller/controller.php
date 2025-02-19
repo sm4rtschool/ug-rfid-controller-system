@@ -400,6 +400,7 @@ input:checked + .slider:before {
   var port_ws_server = $('#port_ws_server').val();
   var protocol_ws_server = $('#protocol_ws_server').val();
   const socket = new WebSocket(protocol_ws_server + '://' + ip_address_server + ':' + port_ws_server);
+  console.log('Connecting to WebSocket server...', socket);
 
   socket.onopen = function(event) {
       console.log('Your Controller System Connected to WebSocket server');
@@ -457,6 +458,50 @@ input:checked + .slider:before {
                 }
             });
         });
+    }
+
+    function playAlarmOn() {
+      
+      $.ajax({
+        type: 'POST',
+        url: '<?php site_url(); ?>proxy', // Sesuaikan dengan path CodeIgniter
+        success: function(response) {
+            console.log('Response from CodeIgniter:', response);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error:', error);
+        }
+      });
+
+    }
+
+    async function getStatusAset(kode_tid) {
+      try {
+        const response = await $.ajax({
+          type: 'GET',
+          url: '<?php echo site_url(); ?>controller/getStatusAset/',
+          data: { kode_tid: kode_tid },
+          dataType: 'json'
+        });
+
+        if (response.success) {
+          return {
+            is_illegal: response.is_illegal,
+            data: response.data
+          };
+        } else {
+          return {
+            is_illegal: false,
+            data: []
+          };
+        }
+      } catch (error) {
+        console.error('Error fetching status aset:', error);
+        return {
+          is_illegal: false,
+          data: []
+        };
+      }
     }
 
     function getLastDetection(rfid_tag_number, room_id, reader_angle) {
@@ -681,6 +726,7 @@ input:checked + .slider:before {
             try {
                 var tid = parsedData.value.tid;
                 var alias_antenna = parsedData.value.alias_antenna;
+                var flag_alarm = parsedData.value.flag_alarm;
 
                 var isExisting = uniqueDataArray.some(data => data.tid === tid && data.alias_antenna === alias_antenna);
 
@@ -696,7 +742,7 @@ input:checked + .slider:before {
                         created_time: waktu,
                         description: parsedData.value.description,
                         category: parsedData.value.category,
-                        flag_alarm: parsedData.value.flag_alarm,
+                        flag_alarm: flag_alarm,
                         ant: parsedData.value.ant,
                         alias_antenna: parsedData.value.alias_antenna,
                         no_sku: parsedData.value.no_sku
@@ -720,6 +766,25 @@ input:checked + .slider:before {
                     `);
 
                     // console.log('Data baru ditambahkan ke array:', parsedData.value);
+
+                    // cek status aset disini, klo ilegal, nyalain alarmnya
+
+                    if (flag_alarm == '1') {
+                        
+                      getStatusAset(tid).then(statusAset => {
+                        if (statusAset.is_illegal) {
+                          // Handle illegal asset status, e.g., trigger an alarm
+                          console.log('Illegal asset detected:', statusAset.data);
+                          playAlarmOn();
+                          // Add your alarm triggering code here
+                        } else {
+                          console.log('Asset status is legal:', statusAset.data);
+                        }
+                      }).catch(error => {
+                        console.error('Error checking asset status:', error);
+                      });
+
+                    }
 
                     resetPostTimer();
                     

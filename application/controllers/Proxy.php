@@ -16,9 +16,10 @@ class Proxy extends CI_Controller {
 
             $qrypengaturan_sistem = $this->db->get('pengaturan_sistem')->row();
             $interval_on = $qrypengaturan_sistem->relay_interval_on;
+            $relay_url_on = $qrypengaturan_sistem->relay_url_on;
             
             // URL Arduino Web Server
-            $arduino_url = "http://192.168.101.21/playon";
+            $arduino_url = $relay_url_on;
 
             // Data yang akan dikirim ke Arduino dalam format form-data
             $post_data = http_build_query(['interval_on' => $interval_on]);
